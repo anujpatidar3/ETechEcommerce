@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useRoute } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { Product } from "@shared/schema";
@@ -9,14 +8,11 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Star, ShoppingCart, Minus, Plus, ArrowLeft } from "lucide-react";
-import { useCart } from "@/hooks/use-cart";
+import { Star, ArrowLeft } from "lucide-react";
 import { Link } from "wouter";
 
 export default function ProductDetail() {
   const [, params] = useRoute("/products/:slug");
-  const [quantity, setQuantity] = useState(1);
-  const { addItem, isLoading: cartLoading } = useCart();
 
   const { data: product, isLoading } = useQuery<Product>({
     queryKey: ["/api/products", params?.slug],
@@ -28,14 +24,7 @@ export default function ProductDetail() {
     enabled: !!params?.slug,
   });
 
-  const handleAddToCart = () => {
-    if (product) {
-      addItem(product.id, quantity);
-    }
-  };
 
-  const incrementQuantity = () => setQuantity(prev => prev + 1);
-  const decrementQuantity = () => setQuantity(prev => Math.max(1, prev - 1));
 
   if (isLoading) {
     return (
@@ -148,39 +137,13 @@ export default function ProductDetail() {
               </div>
             )}
 
-            {/* Quantity and Add to Cart */}
+            {/* Stock Status */}
             <div className="space-y-4">
-              <div className="flex items-center space-x-4">
-                <span className="font-medium">Quantity:</span>
-                <div className="flex items-center border rounded-lg">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={decrementQuantity}
-                    disabled={quantity <= 1}
-                  >
-                    <Minus className="w-4 h-4" />
-                  </Button>
-                  <span className="px-4 py-2 border-x">{quantity}</span>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={incrementQuantity}
-                  >
-                    <Plus className="w-4 h-4" />
-                  </Button>
-                </div>
+              <div className="text-center">
+                <Badge variant={product.inStock ? "default" : "destructive"} className="text-lg px-4 py-2">
+                  {product.inStock ? "In Stock" : "Out of Stock"}
+                </Badge>
               </div>
-
-              <Button
-                onClick={handleAddToCart}
-                disabled={cartLoading || !product.inStock}
-                size="lg"
-                className="w-full"
-              >
-                <ShoppingCart className="w-5 h-5 mr-2" />
-                {!product.inStock ? "Out of Stock" : `Add ${quantity} to Cart`}
-              </Button>
             </div>
 
             {/* Specifications */}

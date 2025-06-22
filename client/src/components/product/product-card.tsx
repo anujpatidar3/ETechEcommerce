@@ -1,9 +1,7 @@
 import { Link } from "wouter";
-import { Star, ShoppingCart } from "lucide-react";
+import { Star } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { useCart } from "@/hooks/use-cart";
 import { Product } from "@shared/schema";
 
 interface ProductCardProps {
@@ -11,14 +9,6 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
-  const { addItem, isLoading } = useCart();
-
-  const handleAddToCart = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    addItem(product.id);
-  };
-
   const hasDiscount = product.originalPrice && parseFloat(product.originalPrice) > parseFloat(product.price);
 
   return (
@@ -67,15 +57,11 @@ export default function ProductCard({ product }: ProductCardProps) {
             </div>
           </div>
           
-          <Button
-            onClick={handleAddToCart}
-            disabled={isLoading || !product.inStock}
-            className="w-full"
-            size="sm"
-          >
-            <ShoppingCart className="w-4 h-4 mr-2" />
-            {!product.inStock ? "Out of Stock" : "Add to Cart"}
-          </Button>
+          <div className="text-center">
+            <Badge variant={product.inStock ? "default" : "destructive"}>
+              {product.inStock ? "In Stock" : "Out of Stock"}
+            </Badge>
+          </div>
         </CardContent>
       </Card>
     </Link>
