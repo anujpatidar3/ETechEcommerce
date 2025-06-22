@@ -1,11 +1,14 @@
-import { pgTable, text, serial, integer, decimal, boolean, timestamp } from "drizzle-orm/pg-core";
-import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
+import { pgTable, serial, text, boolean, timestamp, integer } from "drizzle-orm/pg-core";
+import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 
+// Database tables
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   username: text("username").notNull().unique(),
   password: text("password").notNull(),
+  accessLevel: text("access_level", { enum: ["Admin", "User"] }).notNull().default("User"),
+  createdAt: timestamp("created_at").defaultNow(),
 });
 
 export const categories = pgTable("categories", {
@@ -21,23 +24,16 @@ export const products = pgTable("products", {
   name: text("name").notNull(),
   slug: text("slug").notNull().unique(),
   description: text("description"),
-  price: decimal("price", { precision: 10, scale: 2 }).notNull(),
-  originalPrice: decimal("original_price", { precision: 10, scale: 2 }),
+  price: text("price").notNull(),
+  originalPrice: text("original_price"),
   brand: text("brand").notNull(),
   categoryId: integer("category_id").notNull(),
   imageUrl: text("image_url").notNull(),
-  rating: decimal("rating", { precision: 2, scale: 1 }).default("0"),
+  rating: text("rating"),
   inStock: boolean("in_stock").default(true),
   featured: boolean("featured").default(false),
-  specifications: text("specifications"), // JSON string
+  specifications: text("specifications"),
   createdAt: timestamp("created_at").defaultNow(),
-});
-
-export const cartItems = pgTable("cart_items", {
-  id: serial("id").primaryKey(),
-  productId: integer("product_id").notNull(),
-  quantity: integer("quantity").notNull().default(1),
-  sessionId: text("session_id").notNull(),
 });
 
 export const inquiries = pgTable("inquiries", {
@@ -51,24 +47,29 @@ export const inquiries = pgTable("inquiries", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-// Insert schemas
+// Zod schemas
+export const userSchema = createSelectSchema(users);
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
+  createdAt: true,
+});
+export const loginSchema = z.object({
+  username: z.string(),
+  password: z.string(),
 });
 
+export const categorySchema = createSelectSchema(categories);
 export const insertCategorySchema = createInsertSchema(categories).omit({
   id: true,
 });
 
+export const productSchema = createSelectSchema(products);
 export const insertProductSchema = createInsertSchema(products).omit({
   id: true,
   createdAt: true,
 });
 
-export const insertCartItemSchema = createInsertSchema(cartItems).omit({
-  id: true,
-});
-
+export const inquirySchema = createSelectSchema(inquiries);
 export const insertInquirySchema = createInsertSchema(inquiries).omit({
   id: true,
   createdAt: true,
@@ -76,16 +77,14 @@ export const insertInquirySchema = createInsertSchema(inquiries).omit({
 
 // Types
 export type User = typeof users.$inferSelect;
-export type InsertUser = z.infer<typeof insertUserSchema>;
+export type InsertUser = typeof users.$inferInsert;
+export type LoginUser = z.infer<typeof loginSchema>;
 
 export type Category = typeof categories.$inferSelect;
-export type InsertCategory = z.infer<typeof insertCategorySchema>;
+export type InsertCategory = typeof categories.$inferInsert;
 
 export type Product = typeof products.$inferSelect;
-export type InsertProduct = z.infer<typeof insertProductSchema>;
-
-export type CartItem = typeof cartItems.$inferSelect;
-export type InsertCartItem = z.infer<typeof insertCartItemSchema>;
+export type InsertProduct = typeof products.$inferInsert;
 
 export type Inquiry = typeof inquiries.$inferSelect;
-export type InsertInquiry = z.infer<typeof insertInquirySchema>;
+export type InsertInquiry = typeof inquiries.$inferInsert;

@@ -1,10 +1,90 @@
-import type { Express } from "express";
+import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
-import { storage } from "./storage";
-import { insertCartItemSchema, insertInquirySchema } from "@shared/schema";
+import jwt from "jsonwebtoken";
+import cookieParser from "cookie-parser";
+import { storage } from "./pg-storage";
+import { insertInquirySchema, insertProductSchema, loginSchema } from "@shared/schema";
 import { z } from "zod";
 
+// JWT authentication middleware
+const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
+
+interface AuthRequest extends Request {
+  user?: {
+    userId: string;
+    username: string;
+    accessLevel: string;
+  };
+}
+
+const authenticateToken = (req: AuthRequest, res: Response, next: NextFunction) => {
+  const token = req.cookies?.token || req.headers.authorization?.replace('Bearer ', '');
+
+  if (!token) {
+    return res.status(401).json({ message: 'Access token required' });
+  }
+
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET) as any;
+    req.user = decoded;
+    next();
+  } catch (error) {
+    return res.status(403).json({ message: 'Invalid token' });
+  }
+};
+
+const requireAdmin = (req: AuthRequest, res: Response, next: NextFunction) => {
+  if (req.user?.accessLevel !== 'Admin') {
+    return res.status(403).json({ message: 'Admin access required' });
+  }
+  next();
+};
+
 export async function registerRoutes(app: Express): Promise<Server> {
+  app.use(cookieParser());
+
+  // Auth API
+  app.post("/api/auth/login", async (req, res) => {
+    try {
+      const validatedData = loginSchema.parse(req.body);
+      const result = await storage.login(validatedData);
+      
+      if (!result) {
+        return res.status(401).json({ message: "Invalid credentials" });
+      }
+
+      res.cookie('token', result.token, { 
+        httpOnly: true, 
+        secure: process.env.NODE_ENV === 'production',
+        maxAge: 24 * 60 * 60 * 1000 // 24 hours
+      });
+      
+      res.json({ user: result.user });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid login data", errors: error.errors });
+      }
+      res.status(500).json({ message: "Login failed" });
+    }
+  });
+
+  app.post("/api/auth/logout", (req, res) => {
+    res.clearCookie('token');
+    res.json({ message: "Logged out successfully" });
+  });
+
+  app.get("/api/auth/me", authenticateToken, async (req: AuthRequest, res) => {
+    try {
+      const user = await storage.getUserById(parseInt(req.user!.userId));
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      res.json(user);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch user" });
+    }
+  });
+
   // Categories API
   app.get("/api/categories", async (req, res) => {
     try {
@@ -55,70 +135,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Cart API
-  app.get("/api/cart/:sessionId", async (req, res) => {
+  // Admin Products API
+  app.post("/api/admin/products", authenticateToken, requireAdmin, async (req: AuthRequest, res) => {
     try {
-      const cartItems = await storage.getCartItems(req.params.sessionId);
-      res.json(cartItems);
-    } catch (error) {
-      res.status(500).json({ message: "Failed to fetch cart items" });
-    }
-  });
-
-  app.post("/api/cart", async (req, res) => {
-    try {
-      const validatedData = insertCartItemSchema.parse(req.body);
-      const cartItem = await storage.addToCart(validatedData);
-      res.json(cartItem);
+      const validatedData = insertProductSchema.parse(req.body);
+      const product = await storage.createProduct(validatedData);
+      res.json(product);
     } catch (error) {
       if (error instanceof z.ZodError) {
-        return res.status(400).json({ message: "Invalid cart item data", errors: error.errors });
+        return res.status(400).json({ message: "Invalid product data", errors: error.errors });
       }
-      res.status(500).json({ message: "Failed to add item to cart" });
+      res.status(500).json({ message: "Failed to create product" });
     }
   });
 
-  app.put("/api/cart/:id", async (req, res) => {
+  app.put("/api/admin/products/:id", authenticateToken, requireAdmin, async (req: AuthRequest, res) => {
     try {
-      const id = parseInt(req.params.id);
-      const { quantity } = req.body;
+      const updateData = insertProductSchema.partial().parse(req.body);
+      const product = await storage.updateProduct(parseInt(req.params.id), updateData);
       
-      if (!quantity || quantity < 1) {
-        return res.status(400).json({ message: "Invalid quantity" });
-      }
-
-      const cartItem = await storage.updateCartItem(id, quantity);
-      if (!cartItem) {
-        return res.status(404).json({ message: "Cart item not found" });
+      if (!product) {
+        return res.status(404).json({ message: "Product not found" });
       }
       
-      res.json(cartItem);
+      res.json(product);
     } catch (error) {
-      res.status(500).json({ message: "Failed to update cart item" });
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid product data", errors: error.errors });
+      }
+      res.status(500).json({ message: "Failed to update product" });
     }
   });
 
-  app.delete("/api/cart/:id", async (req, res) => {
+  app.delete("/api/admin/products/:id", authenticateToken, requireAdmin, async (req: AuthRequest, res) => {
     try {
-      const id = parseInt(req.params.id);
-      const success = await storage.removeFromCart(id);
+      const success = await storage.deleteProduct(parseInt(req.params.id));
       
       if (!success) {
-        return res.status(404).json({ message: "Cart item not found" });
+        return res.status(404).json({ message: "Product not found" });
       }
       
       res.json({ success: true });
     } catch (error) {
-      res.status(500).json({ message: "Failed to remove cart item" });
-    }
-  });
-
-  app.delete("/api/cart/session/:sessionId", async (req, res) => {
-    try {
-      await storage.clearCart(req.params.sessionId);
-      res.json({ success: true });
-    } catch (error) {
-      res.status(500).json({ message: "Failed to clear cart" });
+      res.status(500).json({ message: "Failed to delete product" });
     }
   });
 
@@ -133,6 +192,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Invalid inquiry data", errors: error.errors });
       }
       res.status(500).json({ message: "Failed to create inquiry" });
+    }
+  });
+
+  app.get("/api/admin/inquiries", authenticateToken, requireAdmin, async (req: AuthRequest, res) => {
+    try {
+      const inquiries = await storage.getInquiries();
+      res.json(inquiries);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch inquiries" });
     }
   });
 
