@@ -99,25 +99,25 @@ export default function ProductFilters({ onFiltersChange, currentFilters }: Prod
             <div className="flex items-center space-x-2">
               <RadioGroupItem value="under-25" id="under-25" />
               <Label htmlFor="under-25" className="text-sm text-gray-600">
-                Under $25
+                Under ₹2,500
               </Label>
             </div>
             <div className="flex items-center space-x-2">
               <RadioGroupItem value="25-100" id="25-100" />
               <Label htmlFor="25-100" className="text-sm text-gray-600">
-                $25 - $100
+                ₹2,500 - ₹10,000
               </Label>
             </div>
             <div className="flex items-center space-x-2">
               <RadioGroupItem value="100-500" id="100-500" />
               <Label htmlFor="100-500" className="text-sm text-gray-600">
-                $100 - $500
+                ₹10,000 - ₹50,000
               </Label>
             </div>
             <div className="flex items-center space-x-2">
               <RadioGroupItem value="over-500" id="over-500" />
               <Label htmlFor="over-500" className="text-sm text-gray-600">
-                Over $500
+                Over ₹50,000
               </Label>
             </div>
           </RadioGroup>

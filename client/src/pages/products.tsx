@@ -65,16 +65,16 @@ export default function Products() {
       const price = parseFloat(product.price);
       switch (filters.priceRange) {
         case 'under-25':
-          if (price >= 25) return false;
+          if (price >= 2500) return false;
           break;
         case '25-100':
-          if (price < 25 || price > 100) return false;
+          if (price < 2500 || price > 10000) return false;
           break;
         case '100-500':
-          if (price < 100 || price > 500) return false;
+          if (price < 10000 || price > 50000) return false;
           break;
         case 'over-500':
-          if (price <= 500) return false;
+          if (price <= 50000) return false;
           break;
       }
     }

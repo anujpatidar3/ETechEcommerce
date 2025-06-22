@@ -101,19 +101,26 @@ export default function Footer() {
             <div className="space-y-3">
               <div className="flex items-start">
                 <MapPin className="w-5 h-5 mt-1 mr-3 text-primary flex-shrink-0" />
-                <span className="text-gray-300">
-                  123 Industrial Ave<br />
-                  Business District<br />
-                  City, State 12345
-                </span>
+                <div className="text-gray-300">
+                  <a 
+                    href="https://www.google.com/maps/place/6F4C%2BXP+Dhamnod,+Madhya+Pradesh/@22.2074999,75.4717188,17z/data=!3m1!4b1!4m5!3m4!1s0x3963076b06e0b8e1:0x123456789abcdef!8m2!3d22.2074999!4d75.4717188"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-primary transition-colors cursor-pointer"
+                  >
+                    Sundrel Phata, Sundrel Road<br />
+                    Dhamnod, Madhya Pradesh 454552<br />
+                    Plus Code: 6F4C+XP Dhamnod
+                  </a>
+                </div>
               </div>
               <div className="flex items-center">
                 <Phone className="w-5 h-5 mr-3 text-primary" />
-                <span className="text-gray-300">+1 (555) 123-4567</span>
+                <span className="text-gray-300">+91 9826643210</span>
               </div>
               <div className="flex items-center">
                 <Mail className="w-5 h-5 mr-3 text-primary" />
-                <span className="text-gray-300">sales@etechenterprises.com</span>
+                <span className="text-gray-300">enterprisesetech@gmail.com</span>
               </div>
               <div className="flex items-start">
                 <Clock className="w-5 h-5 mt-1 mr-3 text-primary flex-shrink-0" />
