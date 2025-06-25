@@ -1,4 +1,4 @@
-import { users, categories, products, inquiries, type User, type InsertUser, type Category, type InsertCategory, type Product, type InsertProduct, type Inquiry, type InsertInquiry } from "@shared/schema";
+import { users, categories, products, inquiries, type User, type InsertUser, type Category, type InsertCategory, type Product, type InsertProduct, type Inquiry, type InsertInquiry } from "./schema";
 
 export interface IStorage {
   // Users
@@ -206,7 +206,12 @@ export class MemStorage implements IStorage {
 
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = this.currentUserId++;
-    const user: User = { ...insertUser, id };
+    const user: User = {
+        ...insertUser,
+        id,
+        accessLevel: insertUser.accessLevel ?? "User", // default to "User" if not provided
+        createdAt: insertUser.createdAt ?? new Date(), // default to now if not provided
+    };    
     this.users.set(id, user);
     return user;
   }
@@ -222,7 +227,12 @@ export class MemStorage implements IStorage {
 
   async createCategory(insertCategory: InsertCategory): Promise<Category> {
     const id = this.currentCategoryId++;
-    const category: Category = { ...insertCategory, id };
+    const category: Category = {
+        ...insertCategory,
+        id,
+        description: insertCategory.description ?? null,
+        parentId: insertCategory.parentId ?? null,
+    };
     this.categories.set(id, category);
     return category;
   }
@@ -244,7 +254,11 @@ export class MemStorage implements IStorage {
       );
     }
 
-    return products.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+    return products.sort((a, b) => {
+      const aTime = a.createdAt ? a.createdAt.getTime() : 0;
+      const bTime = b.createdAt ? b.createdAt.getTime() : 0;
+      return bTime - aTime;
+    });
   }
 
   async getProductById(id: number): Promise<Product | undefined> {
@@ -260,6 +274,18 @@ export class MemStorage implements IStorage {
     const product: Product = { 
       ...insertProduct, 
       id,
+      name: insertProduct.name,
+      slug: insertProduct.slug,
+      description: insertProduct.description ?? null,
+      brand: insertProduct.brand,
+      price: insertProduct.price,
+      originalPrice: insertProduct.originalPrice ?? null,
+      categoryId: insertProduct.categoryId,
+      imageUrl: insertProduct.imageUrl,
+      rating: insertProduct.rating ?? null,
+      inStock: insertProduct.inStock ?? null,
+      featured: insertProduct.featured ?? null,
+      specifications: insertProduct.specifications ?? null,
       createdAt: new Date(),
     };
     this.products.set(id, product);
@@ -273,6 +299,8 @@ export class MemStorage implements IStorage {
       ...insertInquiry, 
       id,
       createdAt: new Date(),
+      phone: insertInquiry.phone ?? null,
+      projectType: insertInquiry.projectType ?? null,
     };
     this.inquiries.set(id, inquiry);
     return inquiry;

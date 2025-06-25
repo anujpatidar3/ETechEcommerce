@@ -3,7 +3,7 @@ import { createServer, type Server } from "http";
 import jwt from "jsonwebtoken";
 import cookieParser from "cookie-parser";
 import { storage } from "./pg-storage";
-import { insertInquirySchema, insertProductSchema, loginSchema, insertUserSchema, insertBrandSchema } from "@shared/schema";
+import { insertInquirySchema, insertProductSchema, loginSchema, insertUserSchema, insertBrandSchema } from "./schema";
 import { z } from "zod";
 
 // JWT authentication middleware

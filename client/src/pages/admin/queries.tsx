@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
 import { Button } from "../../components/ui/button";
 import { Badge } from "../../components/ui/badge";
-import { Inquiry } from "../../../../shared/schema";
+import { Inquiry } from "../../lib/schema";
 import { ArrowLeft, Mail, Phone, Calendar, User, MessageSquare, LogOut } from "lucide-react";
 import { useLocation } from "wouter";
 import { format } from "date-fns";

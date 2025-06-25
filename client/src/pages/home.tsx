@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { Product } from "../../../shared/schema";
+import { Product } from "./../lib/schema";
 import Header from "../components/layout/header";
 import Footer from "../components/layout/footer";
 import HeroSection from "../components/home/hero-section";

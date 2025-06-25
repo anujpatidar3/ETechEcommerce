@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
-import { Product, Category } from "../../../shared/schema";
+import { Product, Category } from "../lib/schema";
 import Header from "../components/layout/header";
 import Footer from "../components/layout/footer";
 import ProductCard from "../components/product/product-card";

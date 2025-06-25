@@ -1,5 +1,18 @@
 import { QueryClient, QueryFunction } from "@tanstack/react-query";
 
+// Extend ImportMeta interface to include 'env'
+interface ImportMetaEnv {
+  readonly DEV: boolean;
+  readonly VITE_API_URL?: string;
+  // add other env variables here as needed
+}
+
+declare global {
+  interface ImportMeta {
+    readonly env: ImportMetaEnv;
+  }
+}
+
 async function throwIfResNotOk(res: Response) {
   if (!res.ok) {
     const text = (await res.text()) || res.statusText;
@@ -7,12 +20,20 @@ async function throwIfResNotOk(res: Response) {
   }
 }
 
+function getBaseUrl() {
+  if (import.meta.env.DEV) {
+    // In local dev, always use the Vite proxy (relative URLs)
+    return '';
+  }
+  return import.meta.env.VITE_API_URL || '';
+}
+
 export async function apiRequest(
   method: string,
   url: string,
   data?: unknown | undefined,
 ): Promise<Response> {
-  const baseUrl = import.meta.env.VITE_API_URL || '';
+  const baseUrl = getBaseUrl();
   const fullUrl = url.startsWith('http') ? url : baseUrl + url;
   const res = await fetch(fullUrl, {
     method,

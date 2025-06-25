@@ -6,7 +6,7 @@ import { Label } from "../../components/ui/label";
 import { Button } from "../../components/ui/button";
 import { Separator } from "../../components/ui/separator";
 import { useQuery } from "@tanstack/react-query";
-import { Category } from "../../../../shared/schema";
+import { Category } from "../../lib/schema";
 
 interface ProductFiltersProps {
   onFiltersChange: (filters: any) => void;

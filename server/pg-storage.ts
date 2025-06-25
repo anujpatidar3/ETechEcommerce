@@ -2,7 +2,7 @@ import { eq, like, and, desc } from "drizzle-orm";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { db } from "./db";
-import { users, categories, products, inquiries, brands } from "@shared/schema";
+import { users, categories, products, inquiries, brands } from "./schema";
 import type {
   User,
   InsertUser,
@@ -15,7 +15,7 @@ import type {
   InsertInquiry,
   Brand,
   InsertBrand,
-} from "@shared/schema";
+} from "./schema";
 
 export interface IStorage {
   // Auth
@@ -229,11 +229,12 @@ export class PostgresStorage implements IStorage {
       }
     }
 
-    let query = db.select().from(products);
+    let query;
     if (whereClauses.length > 0) {
-      query = query.where(and(...whereClauses));
+      query = db.select().from(products).where(and(...whereClauses)).orderBy(desc(products.createdAt));
+    } else {
+      query = db.select().from(products).orderBy(desc(products.createdAt));
     }
-    query = query.orderBy(desc(products.createdAt));
     return await query;
   }
 

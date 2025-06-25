@@ -10,7 +10,7 @@ import { Label } from "../../components/ui/label";
 import { Switch } from "../../components/ui/switch";
 import { useToast } from "../../hooks/use-toast";
 import { apiRequest } from "../../lib/queryClient";
-import { Product, Category } from "../../../../shared/schema";
+import { Product, Category } from "../../lib/schema";
 import { Plus, Edit, Trash2, LogOut } from "lucide-react";
 import { useLocation } from "wouter";
 import Header from "../../components/layout/header";
