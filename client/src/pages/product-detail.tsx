@@ -1,13 +1,13 @@
 import { useRoute } from "wouter";
 import { useQuery } from "@tanstack/react-query";
-import { Product } from "@shared/schema";
-import Header from "@/components/layout/header";
-import Footer from "@/components/layout/footer";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Product } from "../../../shared/schema";
+import Header from "../components/layout/header";
+import Footer from "../components/layout/footer";
+import { Button } from "../components/ui/button";
+import { Card, CardContent } from "../components/ui/card";
+import { Badge } from "../components/ui/badge";
+import { Separator } from "../components/ui/separator";
+import { Skeleton } from "../components/ui/skeleton";
 import { Star, ArrowLeft } from "lucide-react";
 import { Link } from "wouter";
 

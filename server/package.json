@@ -1,0 +1,22 @@
+{
+  "name": "etech-ecommerce-backend",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "NODE_ENV=development tsx index.ts",
+    "build": "tsc",
+    "start": "NODE_ENV=production node dist/index.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "drizzle-orm": "^0.29.0",
+    "express": "^4.18.2",
+    "postgres": "^3.4.3"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "tsx": "^4.7.0",
+    "typescript": "^5.0.0"
+  }
+}

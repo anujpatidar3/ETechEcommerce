@@ -1,14 +1,14 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
-import { Product, Category } from "@shared/schema";
-import Header from "@/components/layout/header";
-import Footer from "@/components/layout/footer";
-import ProductCard from "@/components/product/product-card";
-import ProductFilters from "@/components/product/product-filters";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
+import { Product, Category } from "../../../shared/schema";
+import Header from "../components/layout/header";
+import Footer from "../components/layout/footer";
+import ProductCard from "../components/product/product-card";
+import ProductFilters from "../components/product/product-filters";
+import { Skeleton } from "../components/ui/skeleton";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
+import { Button } from "../components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export default function Products() {

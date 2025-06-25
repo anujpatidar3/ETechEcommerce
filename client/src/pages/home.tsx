@@ -1,13 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
-import { Product } from "@shared/schema";
-import Header from "@/components/layout/header";
-import Footer from "@/components/layout/footer";
-import HeroSection from "@/components/home/hero-section";
-import CategorySection from "@/components/home/category-section";
-import BenefitsSection from "@/components/home/benefits-section";
-import ContactSection from "@/components/home/contact-section";
-import ProductCard from "@/components/product/product-card";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Product } from "../../../shared/schema";
+import Header from "../components/layout/header";
+import Footer from "../components/layout/footer";
+import HeroSection from "../components/home/hero-section";
+import CategorySection from "../components/home/category-section";
+import BenefitsSection from "../components/home/benefits-section";
+import ContactSection from "../components/home/contact-section";
+import ProductCard from "../components/product/product-card";
+import { Skeleton } from "../components/ui/skeleton";
 
 export default function Home() {
   const { data: featuredProducts = [], isLoading } = useQuery<Product[]>({

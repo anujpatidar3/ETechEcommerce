@@ -1,10 +1,10 @@
-import Header from "@/components/layout/header";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import Header from "../../components/layout/header";
+import { Card, CardHeader, CardTitle, CardContent } from "../../components/ui/card";
+import { Button } from "../../components/ui/button";
 import { useLocation } from "wouter";
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Input } from "@/components/ui/input";
+import { Input } from "../../components/ui/input";
 import { LogOut } from "lucide-react";
 
 export default function AdminBrandsPage() {

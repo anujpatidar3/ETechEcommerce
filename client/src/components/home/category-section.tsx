@@ -1,5 +1,5 @@
 import { Link } from "wouter";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent } from "../../components/ui/card";
 import { Bolt, Droplets, ArrowRight } from "lucide-react";
 
 export default function CategorySection() {

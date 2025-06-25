@@ -1,8 +1,8 @@
 import { Link } from "wouter";
 import { Star } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Product } from "@shared/schema";
+import { Card, CardContent } from "../../components/ui/card";
+import { Badge } from "../../components/ui/badge";
+import { Product } from "../../../../shared/schema";
 
 interface ProductCardProps {
   product: Product;
