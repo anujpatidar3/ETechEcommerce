@@ -3,7 +3,7 @@ import { createServer, type Server } from "http";
 import jwt from "jsonwebtoken";
 import cookieParser from "cookie-parser";
 import { storage } from "./pg-storage";
-import { insertInquirySchema, insertProductSchema, loginSchema } from "@shared/schema";
+import { insertInquirySchema, insertProductSchema, loginSchema, insertUserSchema, insertBrandSchema } from "@shared/schema";
 import { z } from "zod";
 
 // JWT authentication middleware
@@ -85,6 +85,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Register API
+  app.post("/api/auth/register", async (req, res) => {
+    try {
+      const validatedData = insertUserSchema.parse(req.body);
+      const user = await storage.createUser(validatedData);
+      // Exclude password from response
+      const { password, ...userWithoutPassword } = user;
+      res.status(201).json({ user: userWithoutPassword });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid registration data", errors: error.errors });
+      }
+      res.status(500).json({ message: "User registration failed" });
+    }
+  });
+
   // Categories API
   app.get("/api/categories", async (req, res) => {
     try {
@@ -111,7 +127,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/products", async (req, res) => {
     try {
       const filters = {
-        categoryId: req.query.categoryId ? parseInt(req.query.categoryId as string) : undefined,
+        category: req.query.category as string | undefined,
         featured: req.query.featured === 'true' ? true : req.query.featured === 'false' ? false : undefined,
         search: req.query.search as string,
       };
@@ -201,6 +217,67 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(inquiries);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch inquiries" });
+    }
+  });
+
+  // Brands API
+  app.get("/api/brands", async (req, res) => {
+    try {
+      const brands = await storage.getBrands();
+      res.json(brands);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch brands" });
+    }
+  });
+
+  // Admin Brands API
+  app.get("/api/admin/brands", authenticateToken, requireAdmin, async (req: AuthRequest, res) => {
+    try {
+      const brands = await storage.getBrands();
+      res.json(brands);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch brands" });
+    }
+  });
+
+  app.post("/api/admin/brands", authenticateToken, requireAdmin, async (req: AuthRequest, res) => {
+    try {
+      const validatedData = insertBrandSchema.parse(req.body);
+      const brand = await storage.createBrand(validatedData);
+      res.status(201).json(brand);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid brand data", errors: error.errors });
+      }
+      res.status(500).json({ message: "Failed to create brand" });
+    }
+  });
+
+  app.put("/api/admin/brands/:id", authenticateToken, requireAdmin, async (req: AuthRequest, res) => {
+    try {
+      const updateData = insertBrandSchema.partial().parse(req.body);
+      const brand = await storage.updateBrand(parseInt(req.params.id), updateData);
+      if (!brand) {
+        return res.status(404).json({ message: "Brand not found" });
+      }
+      res.json(brand);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid brand data", errors: error.errors });
+      }
+      res.status(500).json({ message: "Failed to update brand" });
+    }
+  });
+
+  app.delete("/api/admin/brands/:id", authenticateToken, requireAdmin, async (req: AuthRequest, res) => {
+    try {
+      const success = await storage.deleteBrand(parseInt(req.params.id));
+      if (!success) {
+        return res.status(404).json({ message: "Brand not found" });
+      }
+      res.json({ success: true });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to delete brand" });
     }
   });
 

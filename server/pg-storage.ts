@@ -2,7 +2,7 @@ import { eq, like, and, desc } from "drizzle-orm";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { db } from "./db";
-import { users, categories, products, inquiries } from "@shared/schema";
+import { users, categories, products, inquiries, brands } from "@shared/schema";
 import type {
   User,
   InsertUser,
@@ -13,6 +13,8 @@ import type {
   InsertProduct,
   Inquiry,
   InsertInquiry,
+  Brand,
+  InsertBrand,
 } from "@shared/schema";
 
 export interface IStorage {
@@ -27,7 +29,7 @@ export interface IStorage {
   createCategory(category: InsertCategory): Promise<Category>;
 
   // Products
-  getProducts(filters?: { categoryId?: number; featured?: boolean; search?: string }): Promise<Product[]>;
+  getProducts(filters?: { featured?: boolean; search?: string }): Promise<Product[]>;
   getProductById(id: number): Promise<Product | null>;
   getProductBySlug(slug: string): Promise<Product | null>;
   createProduct(product: InsertProduct): Promise<Product>;
@@ -37,6 +39,13 @@ export interface IStorage {
   // Inquiries
   getInquiries(): Promise<Inquiry[]>;
   createInquiry(inquiry: InsertInquiry): Promise<Inquiry>;
+
+  // Brands
+  getBrands(): Promise<Brand[]>;
+  getBrandById(id: number): Promise<Brand | null>;
+  createBrand(brand: InsertBrand): Promise<Brand>;
+  updateBrand(id: number, brand: Partial<InsertBrand>): Promise<Brand | null>;
+  deleteBrand(id: number): Promise<boolean>;
 }
 
 export class PostgresStorage implements IStorage {
@@ -201,29 +210,31 @@ export class PostgresStorage implements IStorage {
   }
 
   // Product methods
-  async getProducts(filters?: { categoryId?: number; featured?: boolean; search?: string }): Promise<Product[]> {
+  async getProducts(filters?: { category?: string; featured?: boolean; search?: string }): Promise<Product[]> {
+    let whereClauses = [];
+
+    if (filters) {
+      if (filters.category) {
+        // Find category by slug
+        const category = await db.select().from(categories).where(eq(categories.slug, filters.category)).limit(1);
+        if (category.length > 0) {
+          whereClauses.push(eq(products.categoryId, category[0].id));
+        }
+      }
+      if (filters.featured !== undefined) {
+        whereClauses.push(eq(products.featured, filters.featured));
+      }
+      if (filters.search) {
+        whereClauses.push(like(products.name, `%${filters.search}%`));
+      }
+    }
+
     let query = db.select().from(products);
-    const conditions = [];
-    
-    if (filters?.categoryId) {
-      conditions.push(eq(products.categoryId, filters.categoryId));
+    if (whereClauses.length > 0) {
+      query = query.where(and(...whereClauses));
     }
-    
-    if (filters?.featured !== undefined) {
-      conditions.push(eq(products.featured, filters.featured));
-    }
-    
-    if (filters?.search) {
-      conditions.push(
-        like(products.name, `%${filters.search}%`)
-      );
-    }
-
-    if (conditions.length > 0) {
-      query = query.where(and(...conditions));
-    }
-
-    return await query.orderBy(desc(products.createdAt));
+    query = query.orderBy(desc(products.createdAt));
+    return await query;
   }
 
   async getProductById(id: number): Promise<Product | null> {
@@ -263,6 +274,34 @@ export class PostgresStorage implements IStorage {
   async createInquiry(insertInquiry: InsertInquiry): Promise<Inquiry> {
     const result = await db.insert(inquiries).values(insertInquiry).returning();
     return result[0];
+  }
+
+  // Brand methods
+  async getBrands(): Promise<Brand[]> {
+    return await db.select().from(brands).orderBy(desc(brands.createdAt));
+  }
+
+  async getBrandById(id: number): Promise<Brand | null> {
+    const result = await db.select().from(brands).where(eq(brands.id, id)).limit(1);
+    return result.length > 0 ? result[0] : null;
+  }
+
+  async createBrand(insertBrand: InsertBrand): Promise<Brand> {
+    const result = await db.insert(brands).values(insertBrand).returning();
+    return result[0];
+  }
+
+  async updateBrand(id: number, updateData: Partial<InsertBrand>): Promise<Brand | null> {
+    const result = await db.update(brands)
+      .set(updateData)
+      .where(eq(brands.id, id))
+      .returning();
+    return result.length > 0 ? result[0] : null;
+  }
+
+  async deleteBrand(id: number): Promise<boolean> {
+    const result = await db.delete(brands).where(eq(brands.id, id)).returning();
+    return result.length > 0;
   }
 }
 

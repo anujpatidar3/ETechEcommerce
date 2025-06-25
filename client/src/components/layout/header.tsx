@@ -1,8 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
-import { Search, Menu, Phone, Mail, Bolt } from "lucide-react";
+import { Menu, Phone, Mail, Bolt } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Sheet,
   SheetContent,
@@ -14,25 +13,25 @@ import {
 
 export default function Header() {
   const [location, navigate] = useLocation();
-  const [searchQuery, setSearchQuery] = useState("");
-  const [isSearchVisible, setIsSearchVisible] = useState(false);
+  const [user, setUser] = useState(() => {
+    const stored = localStorage.getItem('user');
+    return stored ? JSON.parse(stored) : null;
+  });
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      navigate(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
-      setSearchQuery("");
-      setIsSearchVisible(false);
-    }
-  };
+  useEffect(() => {
+    const stored = localStorage.getItem('user');
+    setUser(stored ? JSON.parse(stored) : null);
+  }, [location]);
+
+  const isAdmin = user && user.accessLevel === 'Admin';
 
   const navLinks = [
     { href: "/", label: "Home" },
-    { href: "/products?category=electrical", label: "Electrical" },
-    { href: "/products?category=sanitary", label: "Sanitary" },
-    { href: "/brands", label: "Brands" },
-    { href: "/projects", label: "Projects" },
-    { href: "/contact", label: "Contact" },
+    { href: "/products", label: "Products" },
+  ];
+
+  const adminLinks = [
+    { href: "/admin/pages", label: "Admin Pages" },
   ];
 
   return (
@@ -51,7 +50,7 @@ export default function Header() {
                 enterprisesetech@gmail.com
               </span>
             </div>
-            <div className="hidden md:flex items-center space-x-4">
+            {/* <div className="hidden md:flex items-center space-x-4">
               <Link href="/b2b" className="nav-link hover:text-primary">
                 B2B Portal
               </Link>
@@ -61,7 +60,7 @@ export default function Header() {
               <Link href="/support" className="nav-link hover:text-primary">
                 Support
               </Link>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
@@ -77,7 +76,7 @@ export default function Header() {
 
             {/* Desktop Navigation */}
             <nav className="hidden lg:flex items-center space-x-8">
-              {navLinks.map((link) => (
+              {[...navLinks, ...(isAdmin ? adminLinks : [])].map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
@@ -93,30 +92,6 @@ export default function Header() {
 
           {/* Search and Cart */}
           <div className="flex items-center space-x-4">
-            {/* Desktop Search */}
-            <form onSubmit={handleSearch} className="hidden md:flex items-center bg-gray-100 rounded-lg px-4 py-2 w-96">
-              <Search className="w-5 h-5 text-gray-400 mr-3" />
-              <Input
-                type="text"
-                placeholder="Search products..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="bg-transparent flex-1 outline-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-sm"
-              />
-            </form>
-
-            {/* Mobile Search Toggle */}
-            <Button
-              variant="ghost"
-              size="sm"
-              className="lg:hidden"
-              onClick={() => setIsSearchVisible(!isSearchVisible)}
-            >
-              <Search className="w-5 h-5" />
-            </Button>
-
-
-
             {/* Mobile Menu */}
             <Sheet>
               <SheetTrigger asChild>
@@ -130,7 +105,7 @@ export default function Header() {
                   <SheetDescription>Navigate to different sections</SheetDescription>
                 </SheetHeader>
                 <nav className="flex flex-col space-y-4 mt-6">
-                  {navLinks.map((link) => (
+                  {[...navLinks, ...(isAdmin ? adminLinks : [])].map((link) => (
                     <Link
                       key={link.href}
                       href={link.href}
@@ -146,23 +121,6 @@ export default function Header() {
             </Sheet>
           </div>
         </div>
-
-        {/* Mobile Search */}
-        {isSearchVisible && (
-          <div className="md:hidden pb-4">
-            <form onSubmit={handleSearch} className="flex items-center bg-gray-100 rounded-lg px-4 py-2">
-              <Search className="w-5 h-5 text-gray-400 mr-3" />
-              <Input
-                type="text"
-                placeholder="Search products..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="bg-transparent flex-1 outline-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-sm"
-                autoFocus
-              />
-            </form>
-          </div>
-        )}
       </div>
     </header>
   );

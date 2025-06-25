@@ -36,28 +36,18 @@ export default function Footer() {
             <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
             <ul className="space-y-2">
               <li>
-                <Link href="/about" className="text-gray-300 hover:text-primary transition-colors">
-                  About Us
+                <Link href="/" className="text-gray-300 hover:text-primary transition-colors">
+                  Home
                 </Link>
               </li>
               <li>
-                <Link href="/brands" className="text-gray-300 hover:text-primary transition-colors">
-                  Our Brands
+                <Link href="/products" className="text-gray-300 hover:text-primary transition-colors">
+                  Products
                 </Link>
               </li>
               <li>
-                <Link href="/bulk-orders" className="text-gray-300 hover:text-primary transition-colors">
-                  Bulk Orders
-                </Link>
-              </li>
-              <li>
-                <Link href="/services" className="text-gray-300 hover:text-primary transition-colors">
-                  Installation Services
-                </Link>
-              </li>
-              <li>
-                <Link href="/support" className="text-gray-300 hover:text-primary transition-colors">
-                  Technical Support
+                <Link href="/admin/pages" className="text-gray-300 hover:text-primary transition-colors">
+                  Admin Pages
                 </Link>
               </li>
             </ul>
@@ -68,27 +58,27 @@ export default function Footer() {
             <h3 className="text-lg font-semibold mb-4">Product Categories</h3>
             <ul className="space-y-2">
               <li>
-                <Link href="/products?category=electrical" className="text-gray-300 hover:text-primary transition-colors">
+                <Link href="/products" className="text-gray-300 hover:text-primary transition-colors">
                   Electrical Switches
                 </Link>
               </li>
               <li>
-                <Link href="/products?category=electrical" className="text-gray-300 hover:text-primary transition-colors">
+                <Link href="/products" className="text-gray-300 hover:text-primary transition-colors">
                   LED Lighting
                 </Link>
               </li>
               <li>
-                <Link href="/products?category=sanitary" className="text-gray-300 hover:text-primary transition-colors">
+                <Link href="/products" className="text-gray-300 hover:text-primary transition-colors">
                   Kitchen Faucets
                 </Link>
               </li>
               <li>
-                <Link href="/products?category=sanitary" className="text-gray-300 hover:text-primary transition-colors">
+                <Link href="/products" className="text-gray-300 hover:text-primary transition-colors">
                   Bathroom Fittings
                 </Link>
               </li>
               <li>
-                <Link href="/products?category=sanitary" className="text-gray-300 hover:text-primary transition-colors">
+                <Link href="/products" className="text-gray-300 hover:text-primary transition-colors">
                   Pipes & Accessories
                 </Link>
               </li>

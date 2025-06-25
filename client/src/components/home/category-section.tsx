@@ -15,7 +15,7 @@ export default function CategorySection() {
 
         <div className="grid md:grid-cols-2 gap-8">
           {/* Electrical Category */}
-          <Link href="/products?category=electrical">
+          <Link href="/products">
             <Card className="group cursor-pointer hover:shadow-xl transition-all duration-300">
               <div className="overflow-hidden rounded-t-lg">
                 <img
@@ -35,19 +35,19 @@ export default function CategorySection() {
                   Switches, wires, circuit breakers, LED lights, outlets, and complete electrical solutions for every project.
                 </p>
                 <div className="flex items-center text-primary font-semibold group-hover:translate-x-2 transition-transform">
-                  Explore Electrical <ArrowRight className="ml-2 w-4 h-4" />
+                  Explore Products <ArrowRight className="ml-2 w-4 h-4" />
                 </div>
               </CardContent>
             </Card>
           </Link>
 
           {/* Sanitary Category */}
-          <Link href="/products?category=sanitary">
+          <Link href="/products">
             <Card className="group cursor-pointer hover:shadow-xl transition-all duration-300">
               <div className="overflow-hidden rounded-t-lg">
                 <img
-                  src="https://images.unsplash.com/photo-1584622650111-993a426fbf0a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=400"
-                  alt="Sanitary products including faucets and fixtures"
+                  src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=400"
+                  alt="Sanitary products including faucets and pipes"
                   className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
                 />
               </div>
@@ -59,10 +59,10 @@ export default function CategorySection() {
                   <h3 className="text-2xl font-bold text-gray-800">Sanitary Products</h3>
                 </div>
                 <p className="text-gray-600 mb-6">
-                  Faucets, pipes, bathroom fittings, kitchen sinks, and complete plumbing solutions for modern spaces.
+                  Faucets, pipes, showers, sanitaryware, and all plumbing essentials for modern spaces.
                 </p>
                 <div className="flex items-center text-primary font-semibold group-hover:translate-x-2 transition-transform">
-                  Explore Sanitary <ArrowRight className="ml-2 w-4 h-4" />
+                  Explore Products <ArrowRight className="ml-2 w-4 h-4" />
                 </div>
               </CardContent>
             </Card>

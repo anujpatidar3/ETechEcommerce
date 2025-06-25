@@ -19,11 +19,11 @@ export default function HeroSection() {
                   Shop Now
                 </Button>
               </Link>
-              <Link href="/contact">
+              {/* <Link href="/contact">
                 <Button size="lg" variant="outline" className="border-2 border-white text-white hover:bg-white hover:text-primary">
                   B2B Inquiry
                 </Button>
-              </Link>
+              </Link> */}
             </div>
           </div>
           

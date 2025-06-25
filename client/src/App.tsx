@@ -8,8 +8,11 @@ import Home from "@/pages/home";
 import Products from "@/pages/products";
 import ProductDetail from "@/pages/product-detail";
 import Login from "@/pages/login";
-import AdminProducts from "@/pages/admin-products";
-import AdminQueries from "@/pages/admin-queries";
+import AdminProducts from "@/pages/admin/products";
+import AdminBrands from "@/pages/admin/brands";
+import AdminQueries from "@/pages/admin/queries";
+import AdminPages from "@/pages/admin/pages";
+import Signup from "@/pages/signup";
 
 function Router() {
   return (
@@ -18,8 +21,11 @@ function Router() {
       <Route path="/products" component={Products} />
       <Route path="/products/:slug" component={ProductDetail} />
       <Route path="/login" component={Login} />
+      <Route path="/signup" component={Signup} />
       <Route path="/admin/products" component={AdminProducts} />
+      <Route path="/admin/brands" component={AdminBrands} />
       <Route path="/admin/queries" component={AdminQueries} />
+      <Route path="/admin/pages" component={AdminPages} />
       <Route component={NotFound} />
     </Switch>
   );

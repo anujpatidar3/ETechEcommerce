@@ -22,17 +22,8 @@ export default function Products() {
   useEffect(() => {
     const params = new URLSearchParams(location.split('?')[1] || '');
     const urlFilters: any = {};
-    
     if (params.get('search')) urlFilters.search = params.get('search');
-    if (params.get('category')) {
-      // Map category slug to ID - this would typically come from a categories lookup
-      const categoryMap: { [key: string]: number } = { electrical: 1, sanitary: 2 };
-      const categorySlug = params.get('category');
-      if (categorySlug && categoryMap[categorySlug]) {
-        urlFilters.categories = [categoryMap[categorySlug]];
-      }
-    }
-    
+    if (params.get('category')) urlFilters.category = params.get('category');
     setFilters(urlFilters);
   }, [location]);
 
@@ -40,12 +31,8 @@ export default function Products() {
     queryKey: ["/api/products", filters, sortBy],
     queryFn: async () => {
       const params = new URLSearchParams();
-      
       if (filters.search) params.append('search', filters.search);
-      if (filters.categories && filters.categories.length > 0) {
-        params.append('categoryId', filters.categories[0].toString());
-      }
-      
+      if (filters.category) params.append('category', filters.category);
       const response = await fetch(`/api/products?${params}`);
       return response.json();
     },
@@ -71,19 +58,22 @@ export default function Products() {
           if (price < 2500 || price > 10000) return false;
           break;
         case '100-500':
-          if (price < 10000 || price > 50000) return false;
+          if (price < 10000 || price > 50000)
           break;
         case 'over-500':
-          if (price <= 50000) return false;
+          if (price <= 50000)
           break;
       }
     }
-
     // Apply brand filter
     if (filters.brands && filters.brands.length > 0) {
       if (!filters.brands.includes(product.brand)) return false;
     }
-
+    // Apply category filter
+    if (filters.category) {
+      const category = categories.find(c => c.slug === filters.category);
+      if (category && product.categoryId !== category.id) return false;
+    }
     return true;
   });
 
@@ -94,7 +84,7 @@ export default function Products() {
       case 'price-high':
         return parseFloat(b.price) - parseFloat(a.price);
       case 'newest':
-        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        return new Date(b.createdAt ?? '').getTime() - new Date(a.createdAt ?? '').getTime();
       case 'rating':
         return parseFloat(b.rating || '0') - parseFloat(a.rating || '0');
       default:

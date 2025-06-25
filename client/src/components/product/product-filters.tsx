@@ -20,15 +20,36 @@ export default function ProductFilters({ onFiltersChange, currentFilters }: Prod
     queryKey: ["/api/categories"],
   });
 
+  const { data: brands = [] } = useQuery<any[]>({
+    queryKey: ["/api/brands"],
+  });
+
   useEffect(() => {
     setLocalFilters(currentFilters);
   }, [currentFilters]);
 
-  const handleCategoryChange = (categoryId: number, checked: boolean) => {
-    const newCategories = checked
-      ? [...(localFilters.categories || []), categoryId]
-      : (localFilters.categories || []).filter((id: number) => id !== categoryId);
+  useEffect(() => {
+    // If a category slug is present in currentFilters, select the corresponding category
+    if (currentFilters.category && categories.length > 0) {
+      const selected = categories.find(c => c.slug === currentFilters.category);
+      if (selected) {
+        setLocalFilters((prev: any) => ({
+          ...prev,
+          categories: [selected.id],
+          category: selected.slug,
+        }));
+      }
+    }
+  }, [currentFilters.category, categories]);
 
+  const handleCategoryChange = (categoryId: number, checked: boolean) => {
+    // Allow multiple categories to be selected
+    let newCategories: number[] = Array.isArray(localFilters.categories) ? [...localFilters.categories] : [];
+    if (checked) {
+      if (!newCategories.includes(categoryId)) newCategories.push(categoryId);
+    } else {
+      newCategories = newCategories.filter((id) => id !== categoryId);
+    }
     const newFilters = { ...localFilters, categories: newCategories };
     setLocalFilters(newFilters);
   };
@@ -48,7 +69,18 @@ export default function ProductFilters({ onFiltersChange, currentFilters }: Prod
   };
 
   const applyFilters = () => {
-    onFiltersChange(localFilters);
+    // If categories are selected, find their slugs and pass as 'category' filter (array of slugs)
+    console.log("Applying filters:", localFilters);
+    let filtersToSend = { ...localFilters };
+    if (localFilters.categories && localFilters.categories.length > 0 && categories.length > 0) {
+      const selectedCategories = categories.filter(c => localFilters.categories.includes(c.id));
+      if (selectedCategories.length > 0) {
+        filtersToSend = { ...filtersToSend, category: selectedCategories.map(c => c.slug) };
+      }
+    } else {
+      filtersToSend.category = []; // Clear category if no categories selected
+    }
+    onFiltersChange(filtersToSend);
   };
 
   const clearFilters = () => {
@@ -56,8 +88,6 @@ export default function ProductFilters({ onFiltersChange, currentFilters }: Prod
     setLocalFilters(emptyFilters);
     onFiltersChange(emptyFilters);
   };
-
-  const brands = ["Philips", "Legrand", "Kohler", "Schneider", "ABB", "Hansgrohe", "ProPlumb"];
 
   return (
     <Card className="w-full lg:w-64 h-fit">
@@ -129,18 +159,18 @@ export default function ProductFilters({ onFiltersChange, currentFilters }: Prod
         <div>
           <h4 className="font-medium text-gray-700 mb-3">Brand</h4>
           <div className="space-y-2">
-            {brands.map((brand) => (
-              <div key={brand} className="flex items-center space-x-2">
+            {(brands as any[]).map((brand) => (
+              <div key={brand.id} className="flex items-center space-x-2">
                 <Checkbox
-                  id={`brand-${brand}`}
-                  checked={(localFilters.brands || []).includes(brand)}
-                  onCheckedChange={(checked) => handleBrandChange(brand, checked as boolean)}
+                  id={`brand-${brand.name}`}
+                  checked={(localFilters.brands || []).includes(brand.name)}
+                  onCheckedChange={(checked) => handleBrandChange(brand.name, checked as boolean)}
                 />
                 <Label
-                  htmlFor={`brand-${brand}`}
+                  htmlFor={`brand-${brand.name}`}
                   className="text-sm text-gray-600 cursor-pointer"
                 >
-                  {brand}
+                  {brand.name}
                 </Label>
               </div>
             ))}
