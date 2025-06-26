@@ -22,6 +22,7 @@ async function throwIfResNotOk(res: Response) {
 
 function getBaseUrl() {
   if (import.meta.env.DEV) {
+    console.log("VITE_API_URL (development):", import.meta.env.VITE_API_URL);
     // In local dev, always use the Vite proxy (relative URLs)
     return '';
   }
