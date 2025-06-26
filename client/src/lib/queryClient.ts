@@ -25,6 +25,7 @@ function getBaseUrl() {
     // In local dev, always use the Vite proxy (relative URLs)
     return '';
   }
+  console.log("VITE_API_URL (production):", import.meta.env.VITE_API_URL);
   return import.meta.env.VITE_API_URL || '';
 }
 
