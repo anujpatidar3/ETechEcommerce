@@ -1,8 +1,8 @@
 import { eq, like, and, desc } from "drizzle-orm";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { db } from "./db";
-import { users, categories, products, inquiries, brands } from "./schema";
+import { db } from "./db.js";
+import { users, categories, products, inquiries, brands } from "./schema.js";
 import type {
   User,
   InsertUser,

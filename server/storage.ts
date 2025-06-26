@@ -1,4 +1,4 @@
-import { users, categories, products, inquiries, type User, type InsertUser, type Category, type InsertCategory, type Product, type InsertProduct, type Inquiry, type InsertInquiry } from "./schema";
+import { users, categories, products, inquiries, type User, type InsertUser, type Category, type InsertCategory, type Product, type InsertProduct, type Inquiry, type InsertInquiry } from "./schema.js";
 
 export interface IStorage {
   // Users

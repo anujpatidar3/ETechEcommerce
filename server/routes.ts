@@ -2,8 +2,8 @@ import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import jwt from "jsonwebtoken";
 import cookieParser from "cookie-parser";
-import { storage } from "./pg-storage";
-import { insertInquirySchema, insertProductSchema, loginSchema, insertUserSchema, insertBrandSchema } from "./schema";
+import { storage } from "./pg-storage.js";
+import { insertInquirySchema, insertProductSchema, loginSchema, insertUserSchema, insertBrandSchema } from "./schema.js";
 import { z } from "zod";
 
 // JWT authentication middleware
