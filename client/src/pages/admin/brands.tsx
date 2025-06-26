@@ -6,6 +6,7 @@ import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Input } from "../../components/ui/input";
 import { LogOut } from "lucide-react";
+import { apiRequest } from "@/lib/queryClient";
 
 export default function AdminBrandsPage() {
   const queryClient = useQueryClient();
@@ -20,11 +21,7 @@ export default function AdminBrandsPage() {
 
   const addBrandMutation = useMutation({
     mutationFn: async (name: string) => {
-      const res = await fetch("/api/admin/brands", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name }),
-      });
+      const res = await apiRequest("POST", "/api/admin/brands", { name });
       if (!res.ok) throw new Error("Failed to add brand");
       return res.json();
     },
@@ -36,11 +33,7 @@ export default function AdminBrandsPage() {
 
   const updateBrandMutation = useMutation({
     mutationFn: async ({ id, name }: { id: number; name: string }) => {
-      const res = await fetch(`/api/admin/brands/${id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name }),
-      });
+      const res = await apiRequest("PUT", `/api/admin/brands/${id}`, { name });
       if (!res.ok) throw new Error("Failed to update brand");
       return res.json();
     },
@@ -53,7 +46,7 @@ export default function AdminBrandsPage() {
 
   const deleteBrandMutation = useMutation({
     mutationFn: async (id: number) => {
-      const res = await fetch(`/api/admin/brands/${id}`, { method: "DELETE" });
+      const res = await apiRequest("DELETE", `/api/admin/brands/${id}`);
       if (!res.ok) throw new Error("Failed to delete brand");
       return res.json();
     },

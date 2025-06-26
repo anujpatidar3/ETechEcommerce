@@ -10,6 +10,7 @@ import { Separator } from "../components/ui/separator";
 import { Skeleton } from "../components/ui/skeleton";
 import { Star, ArrowLeft } from "lucide-react";
 import { Link } from "wouter";
+import { apiRequest } from "../lib/queryClient";
 
 export default function ProductDetail() {
   const [, params] = useRoute("/products/:slug");
@@ -17,7 +18,7 @@ export default function ProductDetail() {
   const { data: product, isLoading } = useQuery<Product>({
     queryKey: ["/api/products", params?.slug],
     queryFn: async () => {
-      const response = await fetch(`/api/products/${params?.slug}`);
+      const response = await apiRequest("GET", `/api/products/${params?.slug}`);
       if (!response.ok) throw new Error('Product not found');
       return response.json();
     },

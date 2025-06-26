@@ -10,6 +10,7 @@ import { Skeleton } from "../components/ui/skeleton";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
 import { Button } from "../components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { apiRequest } from "@/lib/queryClient";
 
 export default function Products() {
   const [location] = useLocation();
@@ -33,7 +34,7 @@ export default function Products() {
       const params = new URLSearchParams();
       if (filters.search) params.append('search', filters.search);
       if (filters.category) params.append('category', filters.category);
-      const response = await fetch(`/api/products?${params}`);
+      const response = await apiRequest("GET", `/api/products?${params.toString()}`);
       return response.json();
     },
   });
