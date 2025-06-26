@@ -36,7 +36,9 @@ export async function apiRequest(
   data?: unknown | undefined,
 ): Promise<Response> {
   const baseUrl = getBaseUrl();
+  console.log(`apiRequest: ${method} ${baseUrl}${url}`, data);
   const fullUrl = url.startsWith('http') ? url : baseUrl + url;
+  console.log("Full URL:", fullUrl);
   const res = await fetch(fullUrl, {
     method,
     headers: data ? { "Content-Type": "application/json" } : {},
