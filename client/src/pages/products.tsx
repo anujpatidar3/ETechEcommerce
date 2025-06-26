@@ -10,7 +10,7 @@ import { Skeleton } from "../components/ui/skeleton";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
 import { Button } from "../components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest } from "../lib/queryClient";
 
 export default function Products() {
   const [location] = useLocation();

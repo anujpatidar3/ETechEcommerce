@@ -6,7 +6,7 @@ import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Input } from "../../components/ui/input";
 import { LogOut } from "lucide-react";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest } from "../../lib/queryClient";
 
 export default function AdminBrandsPage() {
   const queryClient = useQueryClient();
