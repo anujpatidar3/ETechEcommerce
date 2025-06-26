@@ -12,7 +12,7 @@ declare global {
     readonly env: ImportMetaEnv;
   }
 }
-
+console.log("queryClient.ts loaded");
 async function throwIfResNotOk(res: Response) {
   if (!res.ok) {
     const text = (await res.text()) || res.statusText;
