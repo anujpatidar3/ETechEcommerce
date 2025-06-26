@@ -18,8 +18,10 @@ interface AuthRequest extends Request {
 }
 
 const authenticateToken = (req: AuthRequest, res: Response, next: NextFunction) => {
+  console.log("Authenticating token...", req.cookies);
+  // Check for token in cookies or Authorization header
   const token = req.cookies?.token || req.headers.authorization?.replace('Bearer ', '');
-
+  console.log("Token from cookie or header:", token);
   if (!token) {
     return res.status(401).json({ message: 'Access token required' });
   }
