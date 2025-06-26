@@ -8,12 +8,13 @@ import BenefitsSection from "../components/home/benefits-section";
 import ContactSection from "../components/home/contact-section";
 import ProductCard from "../components/product/product-card";
 import { Skeleton } from "../components/ui/skeleton";
+import { apiRequest } from "../lib/queryClient";
 
 export default function Home() {
   const { data: featuredProducts = [], isLoading } = useQuery<Product[]>({
     queryKey: ["/api/products", { featured: true }],
     queryFn: async () => {
-      const response = await fetch("/api/products?featured=true");
+      const response = await apiRequest("GET", "/api/products?featured=true");
       return response.json();
     },
   });
