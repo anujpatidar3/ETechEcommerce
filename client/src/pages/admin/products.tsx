@@ -8,7 +8,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "../../components/ui/dialog";
 import { Label } from "../../components/ui/label";
 import { Switch } from "../../components/ui/switch";
+import { ImageUpload } from "../../components/ui/image-upload";
 import { useToast } from "../../hooks/use-toast";
+import { useCloudinaryUpload } from "../../hooks/use-cloudinary";
 import { apiRequest } from "../../lib/queryClient";
 import { Product, Category } from "../../lib/schema";
 import { Plus, Edit, Trash2, LogOut } from "lucide-react";
@@ -19,6 +21,9 @@ export default function AdminProducts() {
   const [, navigate] = useLocation();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [isImageUploading, setIsImageUploading] = useState(false); // Track image upload state
+  const [uploadedImageForCleanup, setUploadedImageForCleanup] = useState<string>(""); // Track uploaded image for potential cleanup
+  const [originalImageUrl, setOriginalImageUrl] = useState<string>(""); // Track original image URL when editing
   const [formData, setFormData] = useState({
     name: "",
     slug: "",
@@ -34,6 +39,7 @@ export default function AdminProducts() {
     specifications: "",
   });
   const { toast } = useToast();
+  const { deleteImage } = useCloudinaryUpload();
   const queryClient = useQueryClient();
 
   // Check authentication
@@ -71,6 +77,7 @@ export default function AdminProducts() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/products"] });
+      setUploadedImageForCleanup(""); // Clear cleanup tracking since product was created successfully
       setIsDialogOpen(false);
       resetForm();
       toast({ title: "Product created successfully" });
@@ -82,12 +89,24 @@ export default function AdminProducts() {
 
   const updateProductMutation = useMutation({
     mutationFn: async ({ id, data }: { id: string; data: any }) => {
+      // Get the current product to compare image URLs
+      const currentProduct = products.find(p => p.id.toString() === id);
+      
       const response = await apiRequest("PUT", `/api/admin/products/${id}`, data);
       if (!response.ok) throw new Error("Failed to update product");
+      
+      // If image URL changed and old image was from Cloudinary, delete it
+      if (currentProduct?.imageUrl && 
+          currentProduct.imageUrl !== data.imageUrl && 
+          currentProduct.imageUrl.includes('cloudinary.com')) {
+        await deleteImage(currentProduct.imageUrl);
+      }
+      
       return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/products"] });
+      setUploadedImageForCleanup(""); // Clear cleanup tracking since product was updated successfully
       setIsDialogOpen(false);
       setEditingProduct(null);
       resetForm();
@@ -100,13 +119,22 @@ export default function AdminProducts() {
 
   const deleteProductMutation = useMutation({
     mutationFn: async (id: string) => {
+      // Get the product to access its image URL before deletion
+      const productToDelete = products.find(p => p.id.toString() === id);
+      
       const response = await apiRequest("DELETE", `/api/admin/products/${id}`);
       if (!response.ok) throw new Error("Failed to delete product");
+      
+      // Delete image from Cloudinary if it exists and is a Cloudinary URL
+      if (productToDelete?.imageUrl && productToDelete.imageUrl.includes('cloudinary.com')) {
+        await deleteImage(productToDelete.imageUrl);
+      }
+      
       return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/products"] });
-      toast({ title: "Product deleted successfully" });
+      toast({ title: "Product and image deleted successfully" });
     },
     onError: () => {
       toast({ title: "Failed to delete product", variant: "destructive" });
@@ -128,10 +156,47 @@ export default function AdminProducts() {
       featured: false,
       specifications: "",
     });
+    setIsImageUploading(false); // Reset image upload state
+    setUploadedImageForCleanup(""); // Reset cleanup tracking
+    setOriginalImageUrl(""); // Reset original image tracking
+  };
+
+  const handleDialogClose = async (open: boolean) => {
+    if (!open) {
+      // Dialog is being closed
+      if (editingProduct) {
+        // For editing: if user uploaded a new image but cancelled, clean it up and restore original
+        if (uploadedImageForCleanup && 
+            uploadedImageForCleanup !== originalImageUrl && 
+            uploadedImageForCleanup.includes('cloudinary.com')) {
+          await deleteImage(uploadedImageForCleanup);
+          toast({
+            title: "New Image Cleaned Up",
+            description: "New uploaded image was removed since edit was cancelled.",
+          });
+        }
+      } else {
+        // For new product: if user uploaded image but cancelled, clean it up
+        if (uploadedImageForCleanup && 
+            uploadedImageForCleanup.includes('cloudinary.com')) {
+          await deleteImage(uploadedImageForCleanup);
+          toast({
+            title: "Image Cleaned Up",
+            description: "Uploaded image was removed since product creation was cancelled.",
+          });
+        }
+      }
+      
+      resetForm();
+      setEditingProduct(null);
+    }
+    setIsDialogOpen(open);
   };
 
   const handleEdit = (product: Product) => {
     setEditingProduct(product);
+    setOriginalImageUrl(product.imageUrl); // Store original image URL for potential restoration
+    setUploadedImageForCleanup(""); // Reset cleanup tracking for editing
     setFormData({
       name: product.name,
       slug: product.slug,
@@ -151,6 +216,17 @@ export default function AdminProducts() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Prevent submission if image is still uploading
+    if (isImageUploading) {
+      toast({
+        title: "Please wait",
+        description: "Image is still uploading. Please wait for it to complete.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
     const dataToSend = {
       ...formData,
       categoryId: formData.categoryId ? Number(formData.categoryId) : undefined,
@@ -207,9 +283,9 @@ export default function AdminProducts() {
 
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 gap-4 sm:gap-0">
             <h2 className="text-lg sm:text-xl font-semibold">Products ({products.length})</h2>
-            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <Dialog open={isDialogOpen} onOpenChange={handleDialogClose}>
               <DialogTrigger asChild>
-                <Button onClick={() => { resetForm(); setEditingProduct(null); }}>
+                <Button onClick={() => { resetForm(); setEditingProduct(null); setIsImageUploading(false); setUploadedImageForCleanup(""); setOriginalImageUrl(""); }}>
                   <Plus className="w-4 h-4 mr-2" />
                   Add Product
                 </Button>
@@ -321,16 +397,28 @@ export default function AdminProducts() {
                     </div>
                   </div>
 
-                  <div>
-                    <Label htmlFor="imageUrl">Image URL</Label>
-                    <Input
-                      id="imageUrl"
-                      type="url"
-                      value={formData.imageUrl}
-                      onChange={(e) => setFormData(prev => ({ ...prev, imageUrl: e.target.value }))}
-                      required
-                    />
-                  </div>
+                  <ImageUpload
+                    value={formData.imageUrl}
+                    onChange={(url) => {
+                      setFormData(prev => ({ ...prev, imageUrl: url }));
+                      // Track uploaded image for potential cleanup
+                      if (url && url.includes('cloudinary.com')) {
+                        if (editingProduct) {
+                          // For editing: track new uploads that differ from original
+                          if (url !== originalImageUrl) {
+                            setUploadedImageForCleanup(url);
+                          }
+                        } else {
+                          // For new product: track any upload
+                          setUploadedImageForCleanup(url);
+                        }
+                      }
+                    }}
+                    onUploadStateChange={setIsImageUploading}
+                    label="Product Image"
+                    required
+                    maxSizeInMB={5}
+                  />
 
                   <div>
                     <Label htmlFor="specifications">Specifications (JSON)</Label>
@@ -363,14 +451,19 @@ export default function AdminProducts() {
                   </div>
 
                   <div className="flex flex-col sm:flex-row justify-end gap-2 sm:gap-4">
-                    <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
+                    <Button type="button" variant="outline" onClick={() => handleDialogClose(false)}>
                       Cancel
                     </Button>
                     <Button 
                       type="submit" 
-                      disabled={createProductMutation.isPending || updateProductMutation.isPending}
+                      disabled={createProductMutation.isPending || updateProductMutation.isPending || isImageUploading}
                     >
-                      {editingProduct ? "Update Product" : "Create Product"}
+                      {isImageUploading 
+                        ? "Uploading Image..." 
+                        : editingProduct 
+                          ? "Update Product" 
+                          : "Create Product"
+                      }
                     </Button>
                   </div>
                 </form>

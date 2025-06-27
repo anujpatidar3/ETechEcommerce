@@ -1,6 +1,6 @@
 import { QueryClient, QueryFunction } from "@tanstack/react-query";
 
-// Extend ImportMeta interface to include 'env'
+// Extend ImportMetaEnv interface using module augmentation for Vite
 interface ImportMetaEnv {
   readonly DEV: boolean;
   readonly VITE_API_URL?: string;
@@ -8,10 +8,9 @@ interface ImportMetaEnv {
 }
 
 declare global {
-  interface ImportMeta {
-    readonly env: ImportMetaEnv;
-  }
+  // no ImportMeta redeclaration needed
 }
+
 
 async function throwIfResNotOk(res: Response) {
   if (!res.ok) {

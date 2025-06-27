@@ -2,9 +2,17 @@ import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import jwt from "jsonwebtoken";
 import cookieParser from "cookie-parser";
+import { v2 as cloudinary } from "cloudinary";
 import { storage } from "./pg-storage.js";
 import { insertInquirySchema, insertProductSchema, loginSchema, insertUserSchema, insertBrandSchema } from "./schema.js";
 import { z } from "zod";
+
+// Configure Cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 // JWT authentication middleware
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
@@ -279,6 +287,61 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ success: true });
     } catch (error) {
       res.status(500).json({ message: "Failed to delete brand" });
+    }
+  });
+
+  // Cloudinary signature generation for signed uploads
+  app.post("/api/cloudinary/signature", authenticateToken, requireAdmin, async (req: AuthRequest, res) => {
+    try {
+      const { folder = "etech-products" } = req.body;
+      const timestamp = Math.round(new Date().getTime() / 1000);
+      
+      // Parameters to include in signature
+      const params = {
+        timestamp,
+        folder,
+        upload_preset: undefined, // Not needed for signed uploads
+      };
+
+      // Generate signature
+      const signature = cloudinary.utils.api_sign_request(
+        params,
+        process.env.CLOUDINARY_API_SECRET!
+      );
+
+      res.json({
+        signature,
+        timestamp,
+        cloudName: process.env.CLOUDINARY_CLOUD_NAME,
+        apiKey: process.env.CLOUDINARY_API_KEY,
+        folder,
+      });
+    } catch (error) {
+      console.error("Error generating Cloudinary signature:", error);
+      res.status(500).json({ message: "Failed to generate signature" });
+    }
+  });
+
+  // Cloudinary image deletion for signed deletes
+  app.delete("/api/cloudinary/delete", authenticateToken, requireAdmin, async (req: AuthRequest, res) => {
+    try {
+      const { publicId } = req.body;
+      
+      if (!publicId) {
+        return res.status(400).json({ message: "Public ID is required" });
+      }
+
+      // Delete from Cloudinary
+      const result = await cloudinary.uploader.destroy(publicId);
+      
+      if (result.result === 'ok') {
+        res.json({ message: "Image deleted successfully", result });
+      } else {
+        res.status(404).json({ message: "Image not found or already deleted", result });
+      }
+    } catch (error) {
+      console.error("Error deleting image from Cloudinary:", error);
+      res.status(500).json({ message: "Failed to delete image" });
     }
   });
 
