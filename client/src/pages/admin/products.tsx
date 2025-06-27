@@ -195,11 +195,8 @@ export default function AdminProducts() {
               <p className="text-gray-600">Manage your product catalog</p>
             </div>
             <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 w-full md:w-auto">
-              <Button onClick={() => navigate('/admin/brands')} variant="outline" className="w-full sm:w-auto">
-                View Brands
-              </Button>
-              <Button onClick={() => navigate('/admin/queries')} variant="outline" className="w-full sm:w-auto">
-                View Inquiries
+              <Button onClick={() => navigate('/admin/pages')} variant="outline" className="w-full sm:w-auto">
+                Back to Admin Pages
               </Button>
               <Button onClick={handleLogout} variant="outline" className="w-full sm:w-auto">
                 <LogOut className="w-4 h-4 mr-2" />
