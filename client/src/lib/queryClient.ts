@@ -12,7 +12,7 @@ declare global {
     readonly env: ImportMetaEnv;
   }
 }
-console.log("queryClient.ts loaded");
+
 async function throwIfResNotOk(res: Response) {
   if (!res.ok) {
     const text = (await res.text()) || res.statusText;
@@ -22,11 +22,9 @@ async function throwIfResNotOk(res: Response) {
 
 function getBaseUrl() {
   if (import.meta.env.DEV) {
-    console.log("VITE_API_URL (development):", import.meta.env.VITE_API_URL);
     // In local dev, always use the Vite proxy (relative URLs)
     return '';
   }
-  console.log("VITE_API_URL (production):", import.meta.env.VITE_API_URL);
   return import.meta.env.VITE_API_URL || '';
 }
 
@@ -36,9 +34,7 @@ export async function apiRequest(
   data?: unknown | undefined,
 ): Promise<Response> {
   const baseUrl = getBaseUrl();
-  console.log(`apiRequest: ${method} ${baseUrl}${url}`, data);
   const fullUrl = url.startsWith('http') ? url : baseUrl + url;
-  console.log("Full URL:", fullUrl);
   const res = await fetch(fullUrl, {
     method,
     headers: data ? { "Content-Type": "application/json" } : {},

@@ -7,12 +7,10 @@ const app = express();
 
 // Log allowed origins at startup
 const allowedOrigins = process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',') : ["http://localhost:5173"];
-console.log("CORS_ORIGIN:", allowedOrigins);
 
 // CORS middleware for frontend dev and production (must be first)
 app.use(cors({
   origin: function (origin, callback) {
-    console.log("Incoming request origin:", origin);
     // allow requests with no origin (like mobile apps, curl, etc.)
     if (!origin) return callback(null, true);
     if (allowedOrigins.includes(origin)) {
@@ -26,17 +24,6 @@ app.use(cors({
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-
-app.use((req, _res, next) => {
-  console.log("===== INCOMING REQUEST =====");
-  console.log("URL:", req.originalUrl);
-  console.log("Method:", req.method);
-  console.log("Origin Header:", req.headers.origin);
-  console.log("Cookie Header:", req.headers.cookie);
-  console.log("Parsed Cookies:", req.cookies);
-  console.log("=============================");
-  next();
-});
 
 app.use((req, res, next) => {
   const start = Date.now();

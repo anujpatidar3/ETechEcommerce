@@ -70,7 +70,6 @@ export default function ProductFilters({ onFiltersChange, currentFilters }: Prod
 
   const applyFilters = () => {
     // If categories are selected, find their slugs and pass as 'category' filter (array of slugs)
-    console.log("Applying filters:", localFilters);
     let filtersToSend = { ...localFilters };
     if (localFilters.categories && localFilters.categories.length > 0 && categories.length > 0) {
       const selectedCategories = categories.filter(c => localFilters.categories.includes(c.id));
