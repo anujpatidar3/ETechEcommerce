@@ -99,15 +99,13 @@ export default function Header() {
                 <span>Welcome, {user.username}</span>
               </div>
             ) : (
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="hidden lg:flex items-center gap-2"
+              <button 
+                className="hidden lg:flex items-center gap-2 nav-link font-medium hover:text-primary transition-colors"
                 onClick={() => navigate("/login")}
               >
                 <LogIn className="w-4 h-4" />
                 Login
-              </Button>
+              </button>
             )}
 
             {/* Mobile Menu */}
@@ -143,15 +141,13 @@ export default function Header() {
                         <span>Welcome, {user.username}</span>
                       </div>
                     ) : (
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        className="w-full flex items-center gap-2"
+                      <button 
+                        className="w-full flex items-center gap-2 nav-link font-medium py-2 hover:text-primary transition-colors text-left"
                         onClick={() => navigate("/login")}
                       >
                         <LogIn className="w-4 h-4" />
                         Login
-                      </Button>
+                      </button>
                     )}
                   </div>
                 </nav>
