@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
-import { Menu, Phone, Mail, Bolt } from "lucide-react";
+import { Menu, Phone, Mail, Bolt, LogIn, User } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import {
   Sheet,
@@ -92,6 +92,24 @@ export default function Header() {
 
           {/* Search and Cart */}
           <div className="flex items-center space-x-4">
+            {/* Login/User Button */}
+            {user ? (
+              <div className="hidden lg:flex items-center gap-2 text-sm text-gray-600">
+                <User className="w-4 h-4" />
+                <span>Welcome, {user.username}</span>
+              </div>
+            ) : (
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="hidden lg:flex items-center gap-2"
+                onClick={() => navigate("/login")}
+              >
+                <LogIn className="w-4 h-4" />
+                Login
+              </Button>
+            )}
+
             {/* Mobile Menu */}
             <Sheet>
               <SheetTrigger asChild>
@@ -116,6 +134,26 @@ export default function Header() {
                       {link.label}
                     </Link>
                   ))}
+                  
+                  {/* Mobile Login/User Info */}
+                  <div className="border-t pt-4 mt-4">
+                    {user ? (
+                      <div className="flex items-center gap-2 text-sm text-gray-600 py-2">
+                        <User className="w-4 h-4" />
+                        <span>Welcome, {user.username}</span>
+                      </div>
+                    ) : (
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="w-full flex items-center gap-2"
+                        onClick={() => navigate("/login")}
+                      >
+                        <LogIn className="w-4 h-4" />
+                        Login
+                      </Button>
+                    )}
+                  </div>
                 </nav>
               </SheetContent>
             </Sheet>
