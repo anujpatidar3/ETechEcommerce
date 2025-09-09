@@ -4,6 +4,8 @@ import Category from "@/models/Category";
 import { authenticateAdmin } from "@/lib/middleware";
 import { slugify } from "@/lib/utils";
 
+export const dynamic = "force-dynamic";
+
 export async function POST(request: NextRequest) {
   try {
     const user = await authenticateAdmin();

@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/mongodb";
 import Product from "@/models/Product";
+import Category from "@/models/Category";
+import Brand from "@/models/Brand";
 import { authenticateAdmin } from "@/lib/middleware";
+
+export const dynamic = "force-dynamic";
 
 export async function DELETE(
   request: NextRequest,
@@ -86,7 +90,7 @@ export async function PUT(
         featured: featured || false,
       },
       { new: true }
-    ).populate("category brand");
+    ).populate("categoryId", "name slug");
 
     if (!product) {
       return NextResponse.json({ error: "Product not found" }, { status: 404 });

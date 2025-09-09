@@ -4,6 +4,8 @@ import User from "@/models/User";
 import { authenticateAdmin } from "@/lib/middleware";
 import { hashPassword } from "@/lib/auth";
 
+export const dynamic = "force-dynamic";
+
 interface RouteParams {
   params: {
     id: string;

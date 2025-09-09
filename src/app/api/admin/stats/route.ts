@@ -5,6 +5,8 @@ import Category from "@/models/Category";
 import Brand from "@/models/Brand";
 import Inquiry from "@/models/Inquiry";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(request: NextRequest) {
   try {
     await dbConnect();

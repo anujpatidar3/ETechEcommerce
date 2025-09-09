@@ -3,6 +3,8 @@ import dbConnect from "@/lib/mongodb";
 import Brand from "@/models/Brand";
 import { authenticateAdmin } from "@/lib/middleware";
 
+export const dynamic = "force-dynamic";
+
 interface RouteParams {
   params: {
     id: string;

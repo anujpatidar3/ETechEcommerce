@@ -3,6 +3,8 @@ import dbConnect from "@/lib/mongodb";
 import User from "@/models/User";
 import { comparePassword, generateToken } from "@/lib/auth";
 
+export const dynamic = "force-dynamic";
+
 export async function POST(request: NextRequest) {
   try {
     await dbConnect();

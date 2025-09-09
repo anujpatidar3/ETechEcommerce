@@ -3,6 +3,8 @@ import dbConnect from "@/lib/mongodb";
 import Inquiry from "@/models/Inquiry";
 import { authenticateAdmin } from "@/lib/middleware";
 
+export const dynamic = "force-dynamic";
+
 interface RouteParams {
   params: {
     id: string;
