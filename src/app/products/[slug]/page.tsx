@@ -38,7 +38,7 @@ interface Product {
   rating?: string;
   inStock: boolean;
   featured: boolean;
-  specifications?: Record<string, string>;
+  specifications?: string;
   createdAt?: string;
 }
 
@@ -237,29 +237,34 @@ export default function ProductDetailPage() {
         </div>
 
         {/* Specifications */}
-        {product.specifications &&
-          Object.keys(product.specifications).length > 0 && (
-            <Card className="mt-12">
-              <CardHeader>
-                <CardTitle>Specifications</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid md:grid-cols-2 gap-4">
-                  {Object.entries(product.specifications).map(
-                    ([key, value]) => (
+        {product.specifications && product.specifications.trim() && (
+          <Card className="mt-12 w-full md:w-1/2 mx-auto">
+            <CardHeader>
+              <CardTitle>Specifications</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid md:grid-cols-1 gap-4">
+                {product.specifications
+                  .split(", ")
+                  .filter((spec: string) => spec.trim() && spec.includes(":"))
+                  .map((spec: string, index: number) => {
+                    const [key, value] = spec
+                      .split(":")
+                      .map((s: string) => s.trim());
+                    return (
                       <div
-                        key={key}
+                        key={index}
                         className="flex justify-between py-2 border-b border-gray-200"
                       >
                         <span className="font-medium text-gray-900">{key}</span>
                         <span className="text-gray-600">{value}</span>
                       </div>
-                    )
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          )}
+                    );
+                  })}
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   );
