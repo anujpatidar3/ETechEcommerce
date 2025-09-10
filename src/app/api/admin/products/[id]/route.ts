@@ -61,18 +61,29 @@ export async function PUT(
     const body = await request.json();
     const {
       name,
+      slug,
       description,
       price,
-      category,
+      originalPrice,
       brand,
-      sku,
-      stock,
+      categoryId,
       imageUrl,
+      rating,
+      inStock,
       featured,
+      specifications,
     } = body;
 
     // Validate required fields
-    if (!name || !description || !price || !category || !brand || !sku) {
+    if (!name || !slug || !price || !brand || !categoryId || !imageUrl) {
+      console.log("Missing required fields validation failed:", {
+        name: !!name,
+        slug: !!slug,
+        price: !!price,
+        brand: !!brand,
+        categoryId: !!categoryId,
+        imageUrl: !!imageUrl,
+      });
       return NextResponse.json(
         { error: "Missing required fields" },
         { status: 400 }
@@ -83,14 +94,17 @@ export async function PUT(
       params.id,
       {
         name,
-        description,
-        price: parseFloat(price),
-        category,
+        slug,
+        description: description || "",
+        price,
+        originalPrice: originalPrice || "",
         brand,
-        sku,
-        stock: stock ? parseInt(stock) : 0,
-        imageUrl: imageUrl || "",
+        categoryId,
+        imageUrl,
+        rating: rating || "",
+        inStock: inStock !== undefined ? inStock : true,
         featured: featured || false,
+        specifications: specifications || "",
       },
       { new: true }
     ).populate("categoryId", "name slug");

@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import DataTable from "../../components/ui/data-table";
 import AdminProductFilters from "../../components/admin/admin-product-filters";
+import ImageUpload from "../../components/ui/image-upload";
+import { isCloudinaryUrl } from "../../../lib/image-utils";
 
 interface Product {
   _id: string;
@@ -185,6 +187,12 @@ export default function AdminProducts() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Validate required fields
+    if (!formData.imageUrl) {
+      alert("Please provide an image for the product");
+      return;
+    }
+
     try {
       const url = editingProduct
         ? `/api/admin/products/${editingProduct._id}`
@@ -232,10 +240,29 @@ export default function AdminProducts() {
   const handleDelete = async (id: string) => {
     if (confirm("Are you sure you want to delete this product?")) {
       try {
+        // Find the product to get its image URL
+        const product = products.find((p) => p._id === id);
+
         const response = await fetch(`/api/admin/products/${id}`, {
           method: "DELETE",
         });
+
         if (response.ok) {
+          // Delete associated image from Cloudinary if it exists
+          if (product?.imageUrl && isCloudinaryUrl(product.imageUrl)) {
+            try {
+              await fetch(
+                `/api/upload?imageUrl=${encodeURIComponent(product.imageUrl)}`,
+                {
+                  method: "DELETE",
+                }
+              );
+            } catch (error) {
+              console.error("Error deleting product image:", error);
+              // Continue even if image deletion fails
+            }
+          }
+
           fetchProducts();
         }
       } catch (error) {
@@ -553,19 +580,13 @@ export default function AdminProducts() {
                     </div>
                   </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Image URL *
-                    </label>
-                    <input
-                      type="url"
-                      name="imageUrl"
-                      value={formData.imageUrl}
-                      onChange={handleChange}
-                      required
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    />
-                  </div>
+                  <ImageUpload
+                    value={formData.imageUrl}
+                    onChange={(url) =>
+                      setFormData((prev) => ({ ...prev, imageUrl: url }))
+                    }
+                    disabled={false}
+                  />
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
