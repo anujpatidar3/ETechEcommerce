@@ -12,6 +12,9 @@ export async function GET(
   try {
     await dbConnect();
 
+    // Ensure Category model is registered before populate
+    Category;
+
     const product = await Product.findOne({ slug: params.slug }).populate(
       "categoryId",
       "name slug"

@@ -51,5 +51,7 @@ const inquirySchema = new mongoose.Schema<IInquiry>(
   }
 );
 
-export default mongoose.models.Inquiry ||
-  mongoose.model<IInquiry>("Inquiry", inquirySchema);
+const Inquiry =
+  mongoose.models.Inquiry || mongoose.model<IInquiry>("Inquiry", inquirySchema);
+
+export default Inquiry;

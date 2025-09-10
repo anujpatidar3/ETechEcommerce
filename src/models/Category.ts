@@ -34,5 +34,8 @@ const categorySchema = new mongoose.Schema<ICategory>(
   }
 );
 
-export default mongoose.models.Category ||
+const Category =
+  mongoose.models.Category ||
   mongoose.model<ICategory>("Category", categorySchema);
+
+export default Category;

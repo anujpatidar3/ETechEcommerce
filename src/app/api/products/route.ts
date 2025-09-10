@@ -9,6 +9,9 @@ export async function GET(request: NextRequest) {
   try {
     await dbConnect();
 
+    // Ensure Category model is registered before populate
+    Category;
+
     const { searchParams } = new URL(request.url);
     const category = searchParams.get("category");
     const featured = searchParams.get("featured");

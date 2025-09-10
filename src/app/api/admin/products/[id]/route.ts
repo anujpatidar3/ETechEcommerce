@@ -55,6 +55,9 @@ export async function PUT(
 
     await dbConnect();
 
+    // Ensure Category model is registered before populate
+    Category;
+
     const body = await request.json();
     const {
       name,
