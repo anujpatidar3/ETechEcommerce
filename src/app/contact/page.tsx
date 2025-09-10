@@ -1,6 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import FormInput from "../components/ui/form-input";
+import FormSelect from "../components/ui/form-select";
+import FormTextarea from "../components/ui/form-textarea";
 import Link from "next/link";
 
 export default function ContactPage() {
@@ -96,95 +99,74 @@ export default function ContactPage() {
 
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    First Name *
-                  </label>
-                  <input
-                    type="text"
-                    name="firstName"
-                    value={formData.firstName}
-                    onChange={handleChange}
-                    required
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Last Name *
-                  </label>
-                  <input
-                    type="text"
-                    name="lastName"
-                    value={formData.lastName}
-                    onChange={handleChange}
-                    required
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Email Address *
-                </label>
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
+                <FormInput
+                  label="First Name"
+                  name="firstName"
+                  value={formData.firstName}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Enter your first name"
                 />
-              </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Phone Number
-                </label>
-                <input
-                  type="tel"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Project Type
-                </label>
-                <select
-                  name="projectType"
-                  value={formData.projectType}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="">Select a project type</option>
-                  <option value="residential">Residential</option>
-                  <option value="commercial">Commercial</option>
-                  <option value="industrial">Industrial</option>
-                  <option value="renovation">Renovation</option>
-                  <option value="maintenance">Maintenance</option>
-                  <option value="other">Other</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Message *
-                </label>
-                <textarea
-                  name="message"
-                  value={formData.message}
+                <FormInput
+                  label="Last Name"
+                  name="lastName"
+                  value={formData.lastName}
                   onChange={handleChange}
                   required
-                  rows={4}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Tell us about your project or inquiry..."
+                  placeholder="Enter your last name"
                 />
               </div>
+
+              <FormInput
+                label="Email Address"
+                name="email"
+                type="email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+                placeholder="your.email@example.com"
+              />
+
+              <FormInput
+                label="Phone Number"
+                name="phone"
+                type="tel"
+                value={formData.phone}
+                onChange={handleChange}
+                placeholder="Your phone number"
+                helperText="Optional - we'll use this for urgent inquiries"
+              />
+
+              <FormSelect
+                label="Project Type"
+                name="projectType"
+                value={formData.projectType}
+                onChange={(value) =>
+                  setFormData((prev) => ({ ...prev, projectType: value }))
+                }
+                options={[
+                  { value: "residential", label: "Residential" },
+                  { value: "commercial", label: "Commercial" },
+                  { value: "industrial", label: "Industrial" },
+                  { value: "renovation", label: "Renovation" },
+                  { value: "maintenance", label: "Maintenance" },
+                  { value: "other", label: "Other" },
+                ]}
+                placeholder="Select a project type"
+                helperText="Help us understand your needs better"
+              />
+
+              <FormTextarea
+                label="Message"
+                name="message"
+                value={formData.message}
+                onChange={handleChange}
+                required
+                rows={4}
+                placeholder="Tell us about your project or inquiry..."
+                helperText="Please provide as much detail as possible"
+              />
 
               <button
                 type="submit"

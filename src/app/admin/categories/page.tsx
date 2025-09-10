@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import FormInput from "../../components/ui/form-input";
+import FormTextarea from "../../components/ui/form-textarea";
 
 interface Category {
   _id: string;
@@ -179,18 +181,6 @@ export default function AdminCategories() {
             >
               Add Category
             </button>
-            <Link
-              href="/admin/dashboard"
-              className="bg-white text-gray-700 border border-gray-300 px-4 py-2 rounded-md hover:bg-gray-50 transition-colors text-center"
-            >
-              Back to Dashboard
-            </Link>
-            <Link
-              href="/api/auth/logout"
-              className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors text-center"
-            >
-              Logout
-            </Link>
           </div>
         </div>
 
@@ -279,50 +269,41 @@ export default function AdminCategories() {
                 {editingCategory ? "Edit Category" : "Add Category"}
               </h2>
               <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Name *
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.name}
-                    onChange={(e) => handleNameChange(e.target.value)}
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    required
-                  />
-                </div>
+                <FormInput
+                  label="Name"
+                  name="name"
+                  value={formData.name}
+                  onChange={(e) => handleNameChange(e.target.value)}
+                  required
+                  placeholder="Enter category name"
+                />
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Slug *
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.slug}
-                    onChange={(e) =>
-                      setFormData((prev) => ({ ...prev, slug: e.target.value }))
-                    }
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    required
-                  />
-                </div>
+                <FormInput
+                  label="Slug"
+                  name="slug"
+                  value={formData.slug}
+                  onChange={(e) =>
+                    setFormData((prev) => ({ ...prev, slug: e.target.value }))
+                  }
+                  required
+                  placeholder="URL-friendly version (auto-generated)"
+                  helperText="This will be used in URLs"
+                />
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Description
-                  </label>
-                  <textarea
-                    value={formData.description}
-                    onChange={(e) =>
-                      setFormData((prev) => ({
-                        ...prev,
-                        description: e.target.value,
-                      }))
-                    }
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    rows={3}
-                  />
-                </div>
+                <FormTextarea
+                  label="Description"
+                  name="description"
+                  value={formData.description}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      description: e.target.value,
+                    }))
+                  }
+                  rows={3}
+                  placeholder="Optional description for this category"
+                  helperText="Brief description of the category"
+                />
 
                 <div className="flex justify-end space-x-3 pt-4">
                   <button

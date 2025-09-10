@@ -100,20 +100,6 @@ export default function AdminInquiries() {
             </h1>
             <p className="text-gray-600">View and manage customer inquiries</p>
           </div>
-          <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
-            <Link
-              href="/admin/dashboard"
-              className="bg-white text-gray-700 border border-gray-300 px-4 py-2 rounded-md hover:bg-gray-50 transition-colors text-center"
-            >
-              Back to Dashboard
-            </Link>
-            <Link
-              href="/api/auth/logout"
-              className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors text-center"
-            >
-              Logout
-            </Link>
-          </div>
         </div>
 
         {/* Statistics */}

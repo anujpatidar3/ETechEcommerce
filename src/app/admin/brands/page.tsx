@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import FormInput from "../../components/ui/form-input";
 
 interface Brand {
   _id: string;
@@ -244,20 +245,15 @@ export default function AdminBrands() {
                 </h2>
 
                 <form onSubmit={handleSubmit} className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Brand Name *
-                    </label>
-                    <input
-                      type="text"
-                      name="name"
-                      value={formData.name}
-                      onChange={handleChange}
-                      required
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="Enter brand name"
-                    />
-                  </div>
+                  <FormInput
+                    label="Brand Name"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    required
+                    placeholder="Enter brand name"
+                    helperText="The brand name will be displayed in product listings"
+                  />
 
                   <div className="flex justify-end space-x-4 pt-4">
                     <button

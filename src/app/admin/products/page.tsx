@@ -6,6 +6,9 @@ import { useRouter } from "next/navigation";
 import DataTable from "../../components/ui/data-table";
 import AdminProductFilters from "../../components/admin/admin-product-filters";
 import ImageUpload from "../../components/ui/image-upload";
+import FormInput from "../../components/ui/form-input";
+import FormSelect from "../../components/ui/form-select";
+import FormTextarea from "../../components/ui/form-textarea";
 import { isCloudinaryUrl } from "../../../lib/image-utils";
 
 interface Product {
@@ -30,11 +33,18 @@ interface Category {
   slug: string;
 }
 
+interface Brand {
+  _id: string;
+  name: string;
+  createdAt?: string;
+}
+
 export default function AdminProducts() {
   const [products, setProducts] = useState<Product[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
-  const [brands, setBrands] = useState<string[]>([]);
+  const [brands, setBrands] = useState<Brand[]>([]);
+  const [brandNames, setBrandNames] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
@@ -59,6 +69,7 @@ export default function AdminProducts() {
     checkAuth();
     fetchProducts();
     fetchCategories();
+    fetchBrands();
   }, []);
 
   useEffect(() => {
@@ -154,16 +165,16 @@ export default function AdminProducts() {
         setProducts(data);
         setFilteredProducts(data);
 
-        // Extract unique brands
-        const uniqueBrands: string[] = [];
+        // Extract unique brand names for filter
+        const uniqueBrandNames: string[] = [];
         const seenBrands = new Set<string>();
         data.forEach((product: Product) => {
           if (!seenBrands.has(product.brand)) {
             seenBrands.add(product.brand);
-            uniqueBrands.push(product.brand);
+            uniqueBrandNames.push(product.brand);
           }
         });
-        setBrands(uniqueBrands);
+        setBrandNames(uniqueBrandNames);
       }
     } catch (error) {
       console.error("Error fetching products:", error);
@@ -181,6 +192,18 @@ export default function AdminProducts() {
       }
     } catch (error) {
       console.error("Error fetching categories:", error);
+    }
+  };
+
+  const fetchBrands = async () => {
+    try {
+      const response = await fetch("/api/brands");
+      if (response.ok) {
+        const data = await response.json();
+        setBrands(data);
+      }
+    } catch (error) {
+      console.error("Error fetching brands:", error);
     }
   };
 
@@ -234,6 +257,7 @@ export default function AdminProducts() {
       featured: product.featured,
       specifications: product.specifications || "",
     });
+    fetchBrands(); // Refresh brands when editing
     setIsDialogOpen(true);
   };
 
@@ -433,6 +457,7 @@ export default function AdminProducts() {
               onClick={() => {
                 resetForm();
                 setEditingProduct(null);
+                fetchBrands(); // Refresh brands when opening the dialog
                 setIsDialogOpen(true);
               }}
               className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
@@ -449,7 +474,7 @@ export default function AdminProducts() {
             onFiltersChange={setFilters}
             currentFilters={filters}
             categories={categories}
-            brands={brands}
+            brands={brandNames}
           />
 
           {/* Products Table */}
@@ -473,111 +498,93 @@ export default function AdminProducts() {
 
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div className="grid md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Product Name *
-                      </label>
-                      <input
-                        type="text"
-                        name="name"
-                        value={formData.name}
-                        onChange={handleChange}
-                        required
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      />
-                    </div>
+                    <FormInput
+                      label="Product Name"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleChange}
+                      required
+                    />
 
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Slug *
-                      </label>
-                      <input
-                        type="text"
-                        name="slug"
-                        value={formData.slug}
-                        onChange={handleChange}
-                        required
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      />
-                    </div>
+                    <FormInput
+                      label="Slug"
+                      name="slug"
+                      value={formData.slug}
+                      onChange={handleChange}
+                      required
+                      helperText="URL-friendly version of the product name"
+                    />
                   </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Description
-                    </label>
-                    <textarea
-                      name="description"
-                      value={formData.description}
+                  <FormTextarea
+                    label="Description"
+                    name="description"
+                    value={formData.description}
+                    onChange={handleChange}
+                    rows={3}
+                    helperText="Describe the product features and benefits"
+                  />
+
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <FormInput
+                      label="Price"
+                      name="price"
+                      value={formData.price}
                       onChange={handleChange}
-                      rows={3}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      required
+                      helperText="Current selling price in ₹"
+                    />
+
+                    <FormInput
+                      label="Original Price"
+                      name="originalPrice"
+                      value={formData.originalPrice}
+                      onChange={handleChange}
+                      helperText="Original price (for showing discounts)"
                     />
                   </div>
 
                   <div className="grid md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Price *
-                      </label>
-                      <input
-                        type="text"
-                        name="price"
-                        value={formData.price}
-                        onChange={handleChange}
-                        required
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      />
-                    </div>
+                    <FormSelect
+                      label="Brand"
+                      name="brand"
+                      value={formData.brand}
+                      onChange={(value) =>
+                        setFormData((prev) => ({ ...prev, brand: value }))
+                      }
+                      options={brands.map((brand) => ({
+                        value: brand.name,
+                        label: brand.name,
+                        _id: brand._id,
+                      }))}
+                      placeholder="Select Brand"
+                      required
+                      emptyMessage="No brands available."
+                      linkText="Manage Brands"
+                      linkHref="/admin/brands"
+                      linkTarget="_blank"
+                      showRefresh={false}
+                    />
 
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Original Price
-                      </label>
-                      <input
-                        type="text"
-                        name="originalPrice"
-                        value={formData.originalPrice}
-                        onChange={handleChange}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Brand *
-                      </label>
-                      <input
-                        type="text"
-                        name="brand"
-                        value={formData.brand}
-                        onChange={handleChange}
-                        required
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Category *
-                      </label>
-                      <select
-                        name="categoryId"
-                        value={formData.categoryId}
-                        onChange={handleChange}
-                        required
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      >
-                        <option value="">Select Category</option>
-                        {categories.map((category) => (
-                          <option key={category._id} value={category._id}>
-                            {category.name}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
+                    <FormSelect
+                      label="Category"
+                      name="categoryId"
+                      value={formData.categoryId}
+                      onChange={(value) =>
+                        setFormData((prev) => ({ ...prev, categoryId: value }))
+                      }
+                      options={categories.map((category) => ({
+                        value: category._id,
+                        label: category.name,
+                        _id: category._id,
+                      }))}
+                      placeholder="Select Category"
+                      required
+                      emptyMessage="No categories available."
+                      linkText="Manage Categories"
+                      linkHref="/admin/categories"
+                      linkTarget="_blank"
+                    />
                   </div>
 
                   <ImageUpload
@@ -588,35 +595,27 @@ export default function AdminProducts() {
                     disabled={false}
                   />
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Specifications
-                    </label>
-                    <textarea
-                      name="specifications"
-                      value={formData.specifications}
-                      onChange={handleChange}
-                      rows={3}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    />
-                  </div>
+                  <FormTextarea
+                    label="Specifications"
+                    name="specifications"
+                    value={formData.specifications}
+                    onChange={handleChange}
+                    rows={3}
+                    helperText="Enter specifications separated by commas (e.g., Material: Plastic, Color: White)"
+                  />
 
                   <div className="grid md:grid-cols-3 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Rating
-                      </label>
-                      <input
-                        type="number"
-                        name="rating"
-                        value={formData.rating}
-                        onChange={handleChange}
-                        min="0"
-                        max="5"
-                        step="0.1"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      />
-                    </div>
+                    <FormInput
+                      label="Rating"
+                      name="rating"
+                      type="number"
+                      value={formData.rating}
+                      onChange={handleChange}
+                      min={0}
+                      max={5}
+                      step={0.1}
+                      helperText="Rating out of 5"
+                    />
 
                     <div className="flex items-center">
                       <input

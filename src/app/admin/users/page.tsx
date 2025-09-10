@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import FormInput from "../../components/ui/form-input";
+import FormSelect from "../../components/ui/form-select";
 
 interface User {
   _id: string;
@@ -172,18 +174,6 @@ export default function AdminUsers() {
             >
               Add User
             </button>
-            <Link
-              href="/admin/dashboard"
-              className="bg-white text-gray-700 border border-gray-300 px-4 py-2 rounded-md hover:bg-gray-50 transition-colors text-center"
-            >
-              Back to Dashboard
-            </Link>
-            <Link
-              href="/api/auth/logout"
-              className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors text-center"
-            >
-              Logout
-            </Link>
           </div>
         </div>
 
@@ -271,50 +261,50 @@ export default function AdminUsers() {
                 {editingUser ? "Edit User" : "Add User"}
               </h2>
               <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Username *
-                  </label>
-                  <input
-                    type="text"
-                    name="username"
-                    value={formData.username}
-                    onChange={handleChange}
-                    required
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
+                <FormInput
+                  label="Username"
+                  name="username"
+                  value={formData.username}
+                  onChange={handleChange}
+                  required
+                  placeholder="Enter username"
+                />
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Password{" "}
-                    {editingUser ? "(leave empty to keep current)" : "*"}
-                  </label>
-                  <input
-                    type="password"
-                    name="password"
-                    value={formData.password}
-                    onChange={handleChange}
-                    required={!editingUser}
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
+                <FormInput
+                  label={`Password ${
+                    editingUser ? "(leave empty to keep current)" : ""
+                  }`}
+                  name="password"
+                  type="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  required={!editingUser}
+                  placeholder="Enter password"
+                  helperText={
+                    editingUser
+                      ? "Leave empty to keep current password"
+                      : "Choose a strong password"
+                  }
+                />
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Access Level *
-                  </label>
-                  <select
-                    name="accessLevel"
-                    value={formData.accessLevel}
-                    onChange={handleChange}
-                    required
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="User">User</option>
-                    <option value="Admin">Admin</option>
-                  </select>
-                </div>
+                <FormSelect
+                  label="Access Level"
+                  name="accessLevel"
+                  value={formData.accessLevel}
+                  onChange={(value) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      accessLevel: value as "Admin" | "User",
+                    }))
+                  }
+                  options={[
+                    { value: "User", label: "User" },
+                    { value: "Admin", label: "Admin" },
+                  ]}
+                  required
+                  placeholder="Select access level"
+                  helperText="Admin users have full system access"
+                />
 
                 <div className="flex justify-end space-x-3 pt-4">
                   <button

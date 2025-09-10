@@ -76,15 +76,14 @@ export default function Footer() {
             <ul className="space-y-2 text-gray-300">
               <li>📞 +91 9826643210</li>
               <li>✉️ enterprisesetech@gmail.com</li>
-              <li>📍 Bhopal, Madhya Pradesh</li>
+              <li>📍 Dhamnod, Madhya Pradesh</li>
             </ul>
           </div>
 
           <div>
             <h4 className="text-lg font-semibold mb-4">Business Hours</h4>
             <ul className="space-y-2 text-gray-300">
-              <li>Monday - Saturday: 9:00 AM - 8:00 PM</li>
-              <li>Sunday: 10:00 AM - 6:00 PM</li>
+              <li>Tuesday - Sunday: 9:00 AM - 8:00 PM</li>
             </ul>
           </div>
         </div>

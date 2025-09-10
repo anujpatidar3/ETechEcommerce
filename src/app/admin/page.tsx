@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import FormInput from "../components/ui/form-input";
 
 export default function AdminLogin() {
   const [credentials, setCredentials] = useState({
@@ -69,37 +70,27 @@ export default function AdminLogin() {
             </div>
           )}
 
-          <div className="rounded-md shadow-sm -space-y-px">
-            <div>
-              <label htmlFor="username" className="sr-only">
-                Username
-              </label>
-              <input
-                id="username"
-                name="username"
-                type="text"
-                required
-                value={credentials.username}
-                onChange={handleChange}
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                placeholder="Username"
-              />
-            </div>
-            <div>
-              <label htmlFor="password" className="sr-only">
-                Password
-              </label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                required
-                value={credentials.password}
-                onChange={handleChange}
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                placeholder="Password"
-              />
-            </div>
+          <div className="space-y-4">
+            <FormInput
+              label="Username"
+              name="username"
+              value={credentials.username}
+              onChange={handleChange}
+              required
+              placeholder="Username"
+              className="rounded-t-md"
+            />
+
+            <FormInput
+              label="Password"
+              name="password"
+              type="password"
+              value={credentials.password}
+              onChange={handleChange}
+              required
+              placeholder="Password"
+              className="rounded-b-md"
+            />
           </div>
 
           <div>
