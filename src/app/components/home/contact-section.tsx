@@ -130,7 +130,9 @@ export default function ContactSection() {
                 </div>
                 <div>
                   <h4 className="font-semibold text-gray-800">Location</h4>
-                  <p className="text-gray-600">Bhopal, Madhya Pradesh, India</p>
+                  <p className="text-gray-600">
+                    Dhamnod, Madhya Pradesh, India, 454552
+                  </p>
                 </div>
               </div>
             </div>
@@ -138,8 +140,7 @@ export default function ContactSection() {
             <div className="bg-primary text-white p-6 rounded-lg">
               <h4 className="text-lg font-semibold mb-2">Business Hours</h4>
               <div className="space-y-1 text-blue-100">
-                <p>Monday - Saturday: 9:00 AM - 8:00 PM</p>
-                <p>Sunday: 10:00 AM - 6:00 PM</p>
+                <p>Tuesday - Sunday: 9:00 AM - 8:00 PM</p>
               </div>
             </div>
           </div>

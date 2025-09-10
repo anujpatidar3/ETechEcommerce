@@ -1,4 +1,4 @@
-import { Truck, Award, Users, DollarSign } from "lucide-react";
+import { Truck, Award, Users, IndianRupeeIcon } from "lucide-react";
 
 export default function BenefitsSection() {
   const benefits = [
@@ -20,7 +20,7 @@ export default function BenefitsSection() {
         "Our technical team provides professional advice and support",
     },
     {
-      icon: DollarSign,
+      icon: IndianRupeeIcon,
       title: "Best Prices",
       description:
         "Competitive pricing with bulk discounts for contractors and retailers",

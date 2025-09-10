@@ -221,7 +221,7 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h4 className="font-semibold text-gray-900">Email</h4>
-                    <p className="text-gray-600">info@etechenterprises.in</p>
+                    <p className="text-gray-600">enterprisesetech@gmail.com</p>
                   </div>
                 </div>
 
@@ -243,7 +243,7 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h4 className="font-semibold text-gray-900">Phone</h4>
-                    <p className="text-gray-600">+91 XXXXX XXXXX</p>
+                    <p className="text-gray-600">+91 98266 43210</p>
                   </div>
                 </div>
 
@@ -274,9 +274,9 @@ export default function ContactPage() {
                     <p className="text-gray-600">
                       ETech Enterprises
                       <br />
-                      Business Address
+                      Sundrel Phata, A.B. Road
                       <br />
-                      City, State - Pincode
+                      Dhamnod, Madhya Pradesh - 454552
                     </p>
                   </div>
                 </div>
@@ -329,7 +329,7 @@ export default function ContactPage() {
                       clipRule="evenodd"
                     />
                   </svg>
-                  15+ years of industry experience
+                  10+ years of industry experience
                 </li>
                 <li className="flex items-center">
                   <svg
